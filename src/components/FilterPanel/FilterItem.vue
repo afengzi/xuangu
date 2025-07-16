@@ -127,6 +127,8 @@ export default {
     
     // 取消选择
     const handleCancel = () => {
+      // 重置鼠标悬停状态，避免取消后依然高亮
+      isHovering.value = false
       emit('item-change', {
         key: props.conditionKey,
         value: '',
