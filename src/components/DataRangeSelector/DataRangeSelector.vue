@@ -154,10 +154,29 @@ export default {
 }
 
 .range-list {
-  max-height: 200px;
+  max-height: 240px;
   overflow-y: auto;
   padding: 8px 0;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(5px);
+}
+
+.range-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.range-list::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.range-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.range-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .range-item {
@@ -188,10 +207,16 @@ export default {
 .range-selector-popover {
   padding: 0 !important;
   min-width: 280px !important;
+  max-width: 320px !important;
   margin-top: 8px !important;
   border-radius: 12px !important;
   border: 1px solid #e2e8f0 !important;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
   backdrop-filter: blur(10px) !important;
+  z-index: 3000 !important;
+}
+
+.range-selector-popover .el-popover__arrow {
+  display: none !important;
 }
 </style> 

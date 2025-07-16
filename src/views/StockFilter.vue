@@ -57,23 +57,113 @@
               style="width: 100%"
               empty-text="请设置筛选条件后查看结果"
               height="400"
+              stripe
+              :header-cell-style="{ 
+                background: '#f8fafc', 
+                color: '#374151', 
+                fontWeight: '600',
+                textAlign: 'center',
+                borderBottom: '2px solid #e5e7eb'
+              }"
+              :cell-style="{ 
+                textAlign: 'center', 
+                padding: '12px 8px',
+                fontSize: '13px'
+              }"
             >
-              <el-table-column prop="code" label="股票代码" width="100" align="center" />
-              <el-table-column prop="name" label="股票名称" width="120" align="center" />
-              <el-table-column prop="price" label="当前价格" width="100" align="center" />
-              <el-table-column prop="change" label="涨跌额" width="100" align="center" />
-              <el-table-column prop="changePercent" label="涨跌幅" width="100" align="center" />
-              <el-table-column prop="pe" label="市盈率" width="80" align="center" />
-              <el-table-column prop="pb" label="市净率" width="80" align="center" />
-              <el-table-column prop="roe" label="ROE%" width="80" align="center" />
-              <el-table-column prop="revenue" label="营业收入(亿)" width="120" align="center" />
-              <el-table-column prop="netProfit" label="净利润(亿)" width="110" align="center" />
-              <el-table-column prop="grossMargin" label="毛利率%" width="100" align="center" />
+              <el-table-column 
+                prop="code" 
+                label="股票代码" 
+                width="100" 
+                align="center"
+                :show-overflow-tooltip="true"
+              />
+              <el-table-column 
+                prop="name" 
+                label="股票名称" 
+                width="120" 
+                align="center"
+                :show-overflow-tooltip="true"
+              />
+              <el-table-column 
+                prop="price" 
+                label="当前价格" 
+                width="100" 
+                align="center"
+                :formatter="formatPrice"
+              />
+              <el-table-column 
+                prop="change" 
+                label="涨跌额" 
+                width="100" 
+                align="center"
+              >
+                <template #default="{ row }">
+                  <span :class="getPriceClass(row.change)">
+                    {{ formatChangeValue(row.change) }}
+                  </span>
+                </template>
+              </el-table-column>
+              <el-table-column 
+                prop="changePercent" 
+                label="涨跌幅" 
+                width="100" 
+                align="center"
+              >
+                <template #default="{ row }">
+                  <span :class="getPriceClass(row.change)">
+                    {{ formatPercentValue(row.changePercent) }}
+                  </span>
+                </template>
+              </el-table-column>
+              <el-table-column 
+                prop="pe" 
+                label="市盈率" 
+                width="80" 
+                align="center"
+                :formatter="formatNumber"
+              />
+              <el-table-column 
+                prop="pb" 
+                label="市净率" 
+                width="80" 
+                align="center"
+                :formatter="formatNumber"
+              />
+              <el-table-column 
+                prop="roe" 
+                label="ROE%" 
+                width="80" 
+                align="center"
+                :formatter="formatPercent"
+              />
+              <el-table-column 
+                prop="revenue" 
+                label="营业收入(亿)" 
+                width="120" 
+                align="center"
+                :formatter="formatMoney"
+              />
+              <el-table-column 
+                prop="netProfit" 
+                label="净利润(亿)" 
+                width="110" 
+                align="center"
+                :formatter="formatMoney"
+              />
+              <el-table-column 
+                prop="grossMargin" 
+                label="毛利率%" 
+                width="100" 
+                align="center"
+                :formatter="formatPercent"
+              />
               <el-table-column label="操作" width="120" fixed="right" align="center">
                 <template #default="{ row }">
                   <el-button 
-                    type="text" 
+                    type="primary" 
                     size="small"
+                    plain
                     @click="handleViewDetail(row)"
                   >
                     查看详情
@@ -187,6 +277,61 @@ export default {
       return 'price-neutral'
     }
     
+    // 数据格式化函数
+    const formatPrice = (row, column, cellValue) => {
+      if (cellValue == null || cellValue === '') return '-'
+      const value = Number(cellValue)
+      if (isNaN(value)) return '-'
+      return `¥${value.toFixed(2)}`
+    }
+    
+    const formatChange = (row, column, cellValue) => {
+      if (cellValue == null || cellValue === '') return '-'
+      const value = Number(cellValue)
+      if (isNaN(value)) return '-'
+      const formatted = value.toFixed(2)
+      return value > 0 ? `+${formatted}` : formatted
+    }
+    
+    const formatPercent = (row, column, cellValue) => {
+      if (cellValue == null || cellValue === '') return '-'
+      const value = Number(cellValue)
+      if (isNaN(value)) return '-'
+      const formatted = value.toFixed(2)
+      return value > 0 ? `+${formatted}%` : `${formatted}%`
+    }
+    
+    // 专门用于模板显示的格式化函数
+    const formatChangeValue = (value) => {
+      if (value == null || value === '') return '-'
+      const num = Number(value)
+      if (isNaN(num)) return '-'
+      const formatted = num.toFixed(2)
+      return num > 0 ? `+${formatted}` : formatted
+    }
+    
+    const formatPercentValue = (value) => {
+      if (value == null || value === '') return '-'
+      const num = Number(value)
+      if (isNaN(num)) return '-'
+      const formatted = num.toFixed(2)
+      return num > 0 ? `+${formatted}%` : `${formatted}%`
+    }
+    
+    const formatNumber = (row, column, cellValue) => {
+      if (cellValue == null || cellValue === '') return '-'
+      const value = Number(cellValue)
+      if (isNaN(value)) return '-'
+      return value.toFixed(2)
+    }
+    
+    const formatMoney = (row, column, cellValue) => {
+      if (cellValue == null || cellValue === '') return '-'
+      const value = Number(cellValue)
+      if (isNaN(value)) return '-'
+      return value.toFixed(2)
+    }
+    
     // 处理下拉菜单命令
     const handleCommand = async (command) => {
       if (command === 'logout') {
@@ -220,7 +365,14 @@ export default {
       handleSearch,
       handleViewDetail,
       getPriceClass,
-      handleCommand
+      handleCommand,
+      formatPrice,
+      formatChange,
+      formatPercent,
+      formatNumber,
+      formatMoney,
+      formatChangeValue,
+      formatPercentValue
     }
   }
 }
@@ -335,10 +487,45 @@ export default {
   font-weight: 600;
 }
 
+/* 表格样式优化 */
+.stock-table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.stock-table :deep(.el-table) {
+  border-radius: 8px;
+}
+
+.stock-table :deep(.el-table__header-wrapper) {
+  border-radius: 8px 8px 0 0;
+}
+
+.stock-table :deep(.el-table__body-wrapper) {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.stock-table :deep(.el-table__row:hover > td) {
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0) !important;
+}
+
+.stock-table :deep(.el-table .el-table__row--striped > td) {
+  background: rgba(248, 250, 252, 0.6);
+}
+
+/* 涨跌颜色样式 */
+.stock-table :deep(.cell) {
+  font-weight: 500;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .page-content {
     padding: 0 15px 15px;
+  }
+  
+  .stock-table :deep(.el-table) {
+    font-size: 12px;
   }
 }
 </style> 

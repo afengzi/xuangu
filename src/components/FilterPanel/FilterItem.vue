@@ -152,13 +152,16 @@ export default {
 
 <style scoped>
 .filter-item {
-  display: inline-block;
-  margin: 2px 6px 2px 0;
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
 }
 
 .filter-tag {
-  display: inline-block;
-  padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 12px;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
   cursor: pointer;
@@ -169,6 +172,8 @@ export default {
   color: #475569;
   position: relative;
   font-weight: 500;
+  white-space: nowrap;
+  box-sizing: border-box;
 }
 
 .filter-tag:hover,
@@ -184,7 +189,7 @@ export default {
   border-color: #3b82f6;
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: #fff;
-  padding-right: 28px;
+  padding-right: 32px;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
@@ -222,7 +227,7 @@ export default {
 
 .cancel-btn {
   position: absolute;
-  right: 8px;
+  right: 6px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
@@ -231,6 +236,11 @@ export default {
   padding: 2px;
   border-radius: 2px;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
 }
 
 .cancel-btn:hover {

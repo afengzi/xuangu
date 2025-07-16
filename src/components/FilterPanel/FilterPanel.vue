@@ -265,8 +265,8 @@ export default {
 .filter-category-row {
   display: flex;
   align-items: flex-start;
-  min-height: 45px;
-  padding: 12px 0;
+  min-height: 50px;
+  padding: 14px 0;
   border-bottom: 1px solid #f1f5f9;
   transition: all 0.3s ease;
 }
@@ -280,19 +280,21 @@ export default {
 }
 
 .category-label {
-  flex: 0 0 100px;
-  padding-right: 16px;
+  flex: 0 0 110px;
+  padding-right: 18px;
   display: flex;
-  align-items: flex-start;
-  min-height: 36px;
-  padding-top: 6px;
+  align-items: center;
+  min-height: 40px;
+  justify-content: flex-end;
+  text-align: right;
 }
 
 .category-name {
   font-size: 14px;
   font-weight: 600;
   color: #1e293b;
-  line-height: 1.4;
+  line-height: 1.5;
+  white-space: nowrap;
 }
 
 .category-name.disabled {
@@ -301,23 +303,28 @@ export default {
 
 .category-conditions {
   flex: 1;
-  min-height: 36px;
+  min-height: 40px;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 2px;
 }
 
 .conditions-container {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 3px;
-  align-items: flex-start;
+  gap: 8px 6px;
+  align-items: center;
+  width: 100%;
 }
 
 .pending-status,
 .loading-status {
   display: flex;
   align-items: center;
-  min-height: 36px;
-  padding: 6px 12px;
+  min-height: 40px;
+  padding: 8px 12px;
+  width: 100%;
 }
 
 .pending-text {
