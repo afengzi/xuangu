@@ -1,0 +1,46 @@
+/**
+ * 股票筛选页面样式
+ * 提供页面布局、组件样式等
+ */
+
+/* 全局基础字体放大 */
+html, body {
+  font-size: 15px;
+}
+
+/* 页面整体样式 */
+.stock-filter-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  padding: 0;
+}
+
+/* 页面内容区域 */
+.page-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px 20px;
+}
+
+/* 价格颜色样式 */
+.price-up {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.price-down {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.price-neutral {
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .page-content {
+    padding: 0 15px 15px;
+  }
+}

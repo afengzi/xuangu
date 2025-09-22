@@ -18,6 +18,7 @@
   - 支持单个数据范围的快速取消
 - 📱 **响应式设计**：适配PC端和移动端显示
 - 🔍 **详情查看**：支持查看股票详细信息
+- 🔗 **股票代码链接**：点击股票代码可直接跳转到对应的股票详情页面
 - 📈 **即时结果展示**：筛选条件下方直接显示结果表格
 - 🎨 **紧凑布局**：优化页面布局，提高空间利用率
 
@@ -59,35 +60,63 @@
 
 ```
 xuangu_demo/
-├── public/
-│   └── index.html                    # HTML入口文件
-├── src/
-│   ├── api/                         # API接口模块
-│   │   ├── index.js                 # axios配置和基础请求方法
-│   │   └── stockAPI.js              # 股票筛选相关API
-│   ├── components/                  # 组件目录
-│   │   ├── DataRangeSelector/       # 数据范围选择器组件
-│   │   │   └── DataRangeSelector.vue # 支持点击即选中、高亮显示的范围选择器
-│   │   └── FilterPanel/             # 筛选面板组件
-│   │       ├── FilterPanel.vue      # 主筛选面板，支持选择器互斥显示
-│   │       └── FilterItem.vue       # 单个筛选项，支持快速取消功能
-│   ├── router/                      # 路由配置
-│   │   └── index.js                 # Vue Router配置，路由守卫和页面权限控制
-│   ├── views/                       # 页面视图
-│   │   ├── Login.vue                # 用户登录页面，支持表单验证和状态管理
-│   │   └── StockFilter.vue          # 股票筛选主页面，包含导航栏和退出登录功能
-│   ├── mock/                        # Mock数据
-│   │   └── stockData.js             # 模拟股票数据
-│   ├── utils/                       # 工具模块
-│   │   └── constants.js             # 常量定义
-│   ├── App.vue                      # 根组件
-│   └── main.js                      # 应用入口
-├── .cursor/                         # Cursor IDE规则配置
-│   └── rules/                       # 开发规则
-├── package.json                     # 项目配置和依赖
-├── vite.config.js                   # Vite配置
-└── README.md                        # 项目说明文档
+├── web/                           # 前端项目目录
+│   ├── public/                    # 静态资源目录
+│   │   └── vite.svg              # Vite图标
+│   ├── src/                      # 源代码目录
+│   │   ├── api/                  # API接口模块
+│   │   │   ├── index.js          # axios配置和基础请求方法
+│   │   │   └── stockAPI.js       # 股票筛选相关API
+│   │   ├── components/           # 组件目录
+│   │   │   ├── DataRangeSelector/ # 数据范围选择器组件
+│   │   │   │   └── DataRangeSelector.vue # 支持点击即选中、高亮显示的范围选择器
+│   │   │   └── FilterPanel/      # 筛选面板组件
+│   │   │       ├── FilterPanel.vue # 主筛选面板，支持选择器互斥显示
+│   │   │       └── FilterItem.vue # 单个筛选项，支持快速取消功能
+│   │   ├── router/               # 路由配置
+│   │   │   └── index.js          # Vue Router配置，路由守卫和页面权限控制
+│   │   ├── views/                # 页面视图
+│   │   │   ├── Login.vue         # 用户登录页面，支持表单验证和状态管理
+│   │   │   └── StockFilter.vue   # 股票筛选主页面，包含导航栏和退出登录功能
+│   │   ├── mock/                 # Mock数据
+│   │   │   └── stockData.js      # 模拟股票数据
+│   │   ├── utils/                # 工具模块
+│   │   │   └── constants.js      # 常量定义
+│   │   ├── App.vue               # 根组件
+│   │   └── main.js               # 应用入口
+│   ├── package.json              # 前端项目配置和依赖
+│   ├── package-lock.json         # 依赖锁定文件
+│   ├── vite.config.js            # Vite构建配置
+│   └── index.html                # HTML入口文件
+├── server/                       # 后端服务目录
+├── demo.py                       # Python演示脚本
+├── .cursor/                      # Cursor IDE规则配置
+│   └── rules/                    # 开发规则
+└── README.md                     # 项目说明文档
 ```
+
+## 后端 Redis 结构（主题/题材）
+
+为了支持题材数据的查询与展示，新增以下 Redis 命名空间：
+
+- 集合：`theme:{题材名}`
+  - 含义：该题材对应的成分股代码集合（6 位代码，不含交易所后缀）
+  - 示例：`SADD theme:中特估 600000 000001`
+
+- 哈希：`theme:detail:{题材名}:{代码}`
+  - 字段：
+    - `code`：6 位股票代码
+    - `name`：股票名称
+    - `theme`：题材名称
+    - `desc`：题材描述
+    - `trade_date`：交易日（YYYYMMDD）
+    - `ts_code`：原始 ts_code（如 600000.SH）
+    - `con_code`：原始 con_code（如 600000.SH 或 000233.KP）
+  - 示例：
+    - 键：`theme:detail:中特估:600000`
+    - 值：`{ code: "600000", name: "浦发银行", theme: "中特估", desc: "...", trade_date: "20250114", ts_code: "600000.SH", con_code: "600000.SH" }`
+
+数据写入入口：`kaipanla/text.py` 中的 `concept_cons_to_redis()`。
 
 ## 快速开始
 
@@ -97,11 +126,13 @@ xuangu_demo/
 
 ### 安装依赖
 ```bash
+cd web
 npm install
 ```
 
 ### 启动开发服务器
 ```bash
+cd web
 npm run dev
 ```
 
@@ -109,11 +140,13 @@ npm run dev
 
 ### 构建生产版本
 ```bash
+cd web
 npm run build
 ```
 
 ### 预览生产构建
 ```bash
+cd web
 npm run preview
 ```
 
@@ -150,6 +183,7 @@ npm run preview
    - 在结果表格中点击"查看详情"按钮
    - 弹出对话框显示股票的详细信息
    - 包含基本面、技术面、资金面等全面数据
+   - 点击股票代码可直接跳转到外部股票详情页面
 
 6. **退出登录**
    - 点击页面右上角的用户名下拉菜单
@@ -176,6 +210,7 @@ npm run preview
 - **颜色区分**：涨跌数据自动显示红涨绿跌，一目了然
 - **斑马纹设计**：交替行背景色，大幅提升数据可读性
 - **操作便捷**：每行都有优化的查看详情按钮
+- **股票代码链接**：股票代码显示为可点击链接，支持外部跳转
 
 #### 布局优化
 - **紧凑设计**：标题左对齐，压缩各组件间距
@@ -265,6 +300,15 @@ npm run preview
 MIT License
 
 ## 更新日志
+
+### v1.4.0 (2025-01-14)
+- 🔗 **新增股票代码链接功能**
+  - 筛选结果表格中的股票代码现在显示为可点击链接
+  - 点击股票代码可跳转到对应的外部股票详情页面
+  - 链接格式：`http://localhost:3000/stock-filter/code_{股票代码}`
+  - 支持常规筛选模式和主题模式下的股票代码链接
+  - 添加悬停效果和视觉反馈，提升用户体验
+  - 响应式设计，移动端自适应显示
 
 ### v1.3.0 (2025-01-14)
 - 🎨 **界面对齐优化**

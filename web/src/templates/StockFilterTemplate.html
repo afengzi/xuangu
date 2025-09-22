@@ -1,0 +1,65 @@
+<!--
+  股票筛选页面 HTML 模板
+  这个文件展示了 StockFilter.vue 的 HTML 结构
+  实际项目中，Vue 组件会自动处理模板编译
+-->
+
+<div class="stock-filter-page">
+  <!-- 导航栏组件 -->
+  <el-header class="app-header">
+    <div class="header-container">
+      <div class="header-left">
+        <h2 class="app-title">选股助手</h2>
+      </div>
+      <div class="header-right">
+        <el-dropdown @command="handleCommand">
+          <span class="user-info">
+            <el-icon><User /></el-icon>
+            {{ currentUser }}
+            <el-icon class="el-icon--right"><arrow-down /></el-icon>
+          </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item command="logout">
+                <el-icon><SwitchButton /></el-icon>
+                退出登录
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
+    </div>
+  </el-header>
+
+  <!-- 主要内容区域 -->
+  <div class="page-content">
+    <el-row :gutter="20">
+      <!-- 筛选面板 -->
+      <el-col :span="24">
+        <FilterPanel 
+          @filter-change="handleFilterChange"
+        />
+      </el-col>
+    </el-row>
+
+    <!-- 股票表格组件 -->
+    <StockTable
+      :stock-list="stockList"
+      :is-theme-mode="isThemeMode"
+      :theme-columns="themeColumns"
+      :data-columns="dataColumns"
+      :show-time-filter="showTimeFilter"
+      v-model:date-range="dateRange"
+      @date-range-change="handleDateRangeChange"
+      @sort-change="handleSortChange"
+      @view-detail="handleViewDetail"
+    />
+  </div>
+
+  <!-- 股票详情对话框组件 -->
+  <StockDetail
+    v-model="showStockDetail"
+    :current-stock="currentStock"
+    @close="showStockDetail = false"
+  />
+</div>
