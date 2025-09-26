@@ -26,6 +26,8 @@
   // 统一的数据解析函数（复用所有解析逻辑）
   function parseStockData(res) {
     var rows = toArray(res);
+    var f = window.StockFilterFactory && window.StockFilterFactory();
+    if (f && f.processStockData) return f.processStockData(rows, {});
     return API.utils.processStockData(rows, {});
   }
 
@@ -51,7 +53,9 @@
         factorRanges: FC.FACTOR_RANGES,
         tableData: [],
         pageSize: 20,
-        currentPage: 1
+        currentPage: 1,
+        hoverDetail: {},
+        hoverDetailHtml: ''
       };
     },
     computed: {
@@ -75,9 +79,30 @@
       }
     },
     methods: {
-      formatCodeLink: function(code) { return '/code_' + code; },
+      formatCodeLink: function(code) {
+        var mod = window.StockLinkFactory && window.StockLinkFactory();
+        // 与主站一致：跳分析系统
+        if (mod && mod.formatStockAnalysisUrl) return mod.formatStockAnalysisUrl(code);
+        var host = (window.__ANALYSIS_HOST || 'http://192.168.1.188:8077').replace(/\/$/,'');
+        return host + '/analysis?stock_code=' + encodeURIComponent(String(code || ''));
+      },
+      onCodeClick: function(event, code){
+        var mod = window.StockLinkFactory && window.StockLinkFactory();
+        if (mod && typeof mod.handleStockCodeClick === 'function') {
+          var handled = mod.handleStockCodeClick(event, code);
+          if (handled === 'tdx') return; // 已在函数内完成跳转
+        }
+        // 非通达信环境：保持 a 标签默认导航
+      },
       getColumnLabel: function(col){ return col; },
-      getColumnWidth: function(col){ var m = { '股票代码': 120, '股票简称': 120 }; return m[col] || 110; },
+      getColumnWidth: function(col){
+        var m = {
+          '股票代码': 120,
+          '股票简称': 120,
+          '题材描述': 380
+        };
+        return m[col] || 110;
+      },
       
       // 显示筛选结果提示（复用主站的提示语逻辑）
       showSearchResult: function(data) {
@@ -170,17 +195,39 @@
       
       // 处理表格列（复用列处理逻辑）
       processTableColumns: function(data) {
-        if (!data || data.length === 0) return this.getDefaultColumns();
+        if (!data || data.length === 0) return this.selectedCount === 0 ? [] : this.getDefaultColumns();
         var first = data[0] || {};
         var cols = Object.keys(first);
         var head = this.getDefaultColumns();
-        cols = cols.filter(function(k){ return head.indexOf(k) === -1; });
+        // 去除重复与不需要的列
+        cols = cols.filter(function(k){ return head.indexOf(k) === -1 && k !== '交易日期'; });
+        // 将热度值放到最后
+        var heatIdx = cols.indexOf('热度值');
+        if (heatIdx > -1) {
+          cols.splice(heatIdx, 1);
+          cols.push('热度值');
+        }
         return head.concat(cols);
       },
       
       // 获取默认列配置（复用列配置逻辑）
       getDefaultColumns: function() {
         return ['股票代码','股票简称'];
+      },
+      
+      onShowDetail: function(code){
+        var self = this;
+        if (!code) return;
+        API.stockAPI.getDetailInfo(code).then(function(resp){
+          var data = resp && resp.data ? resp.data : (resp || {});
+          self.hoverDetail = data;
+          // 生成与主站一致的 HTML
+          var tt = window.StockTooltipFactory && window.StockTooltipFactory();
+          self.hoverDetailHtml = tt && tt.renderContent ? tt.renderContent(data) : '';
+        }).catch(function(){
+          self.hoverDetail = {};
+          self.hoverDetailHtml = '';
+        });
       },
       // 将页面选择的因子转换为后端所需格式，如 'MACD_金叉'
       buildFactorsForApi: function(){
@@ -196,7 +243,8 @@
         };
         
         // 调用主站的 collectFactors 函数
-        var result = API.utils.collectFactors(allFilters);
+        var f = window.StockFilterFactory && window.StockFilterFactory();
+        var result = f && f.collectFactors ? f.collectFactors(allFilters) : API.utils.collectFactors(allFilters);
         return result.factors;
       },
       loadThemes: function() {

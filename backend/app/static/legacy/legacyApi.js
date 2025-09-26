@@ -107,6 +107,10 @@
           factors: factors,
           zhibiao: zhibiao
         });
+      },
+      // 股票详情（悬浮提示使用）
+      getDetailInfo: function(code) {
+        return window.LegacyAPI.post('/stock/filter/detail', { code: code });
       }
     },
     

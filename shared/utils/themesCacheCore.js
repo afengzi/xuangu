@@ -1,9 +1,9 @@
 // 题材缓存核心实现（单一源码）
-// 通过全局工厂函数暴露，供 ESM 与 UMD 包装层复用
+// 通过全局工厂函数暴露，供 ESM 与非模块页面复用
 (function(){
-  if (window.__ThemesCacheModuleFactory) return; // 避免重复定义
+  if (window.ThemesCacheFactory) return; // 避免重复定义
 
-  window.__ThemesCacheModuleFactory = function(){
+  window.ThemesCacheFactory = function(){
     var THEMES_CACHE_KEY = 'hot_themes_cache';
     var CACHE_VERSION = '1.2';
     var DAILY_UPDATE_TIME = '08:35';

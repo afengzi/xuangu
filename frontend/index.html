@@ -23,7 +23,11 @@
     <script src="http://localhost:5000/static/shared/config/factorMapping.js"></script>
     <script src="http://localhost:5000/static/shared/config/factorConfig.js"></script>
     <!-- 注入共享题材缓存核心源码（供 ESM 包装使用） -->
-    <script src="http://localhost:5000/static/shared/utils/themesCache.core.js"></script>
+    <script src="http://localhost:5000/static/shared/utils/themesCacheCore.js"></script>
+    <!-- 注入共享股票链接核心源码（主站与 legacy 共享） -->
+    <script src="http://localhost:5000/static/shared/utils/stockLinkCore.js"></script>
+    <!-- 注入共享筛选核心（因子收集/数据映射，与 legacy 共享） -->
+    <script src="http://localhost:5000/static/shared/utils/stockFilterCore.js"></script>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>

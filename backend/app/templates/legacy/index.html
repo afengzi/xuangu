@@ -13,7 +13,13 @@
     <script src="https://cdn.jsdelivr.net/npm/es6-promise/dist/es6-promise.auto.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/whatwg-fetch/dist/fetch.umd.min.js"></script>
     <!-- 题材缓存工具（与主站一致的缓存逻辑） -->
-    <script src="http://localhost:5000/static/shared/utils/themesCache.core.js"></script>
+    <script src="http://localhost:5000/static/shared/utils/themesCacheCore.js?v=20250926"></script>
+    <!-- 股票代码跳转共享逻辑（与主站一致） -->
+    <script src="http://localhost:5000/static/shared/utils/stockLinkCore.js?v=20250926"></script>
+    <!-- 因子/数据处理共享核心（与主站一致） -->
+    <script src="http://localhost:5000/static/shared/utils/stockFilterCore.js?v=20250926"></script>
+    <!-- 股票悬浮提示渲染共享逻辑（与主站一致） -->
+    <script src="http://localhost:5000/static/shared/utils/stockTooltipCore.js?v=20250926"></script>
   </head>
   <body>
     {% raw %}
@@ -57,7 +63,7 @@
               <el-popover placement="bottom-start" width="360" trigger="click" v-model="factorPopoverVisible['themes']">
                 <div class="popover-scroll">
                   <el-checkbox-group v-model="selectedThemes" @change="loadData">
-                    <el-checkbox v-for="t in themes" :key="t" :label="t" class="list-item">{{t}}</el-checkbox>
+                    <el-checkbox v-for="t in themes.slice(10)" :key="t" :label="t" class="list-item">{{t}}</el-checkbox>
                   </el-checkbox-group>
                 </div>
                 <el-button slot="reference" size="mini" type="warning" plain>
@@ -139,7 +145,7 @@
 
       <!-- 表格区域 -->
       <el-card shadow="never">
-        <el-table :data="pagedList" stripe class="table-full">
+          <el-table :data="pagedList" stripe class="table-full">
           <el-table-column
             v-for="col in dataColumns"
             :key="col"
@@ -147,10 +153,25 @@
             :label="getColumnLabel(col)"
             :width="getColumnWidth(col)"
           >
-            <template slot-scope="scope">
-              <a v-if="col==='股票代码'" :href="formatCodeLink(scope.row[col])">{{ scope.row[col] }}</a>
-              <span v-else>{{ scope.row[col] }}</span>
-            </template>
+              <template slot-scope="scope">
+                <!-- 股票代码：仅为链接，无悬浮窗 -->
+                <a v-if="col==='股票代码'" :href="formatCodeLink(scope.row[col])" @click="onCodeClick($event, scope.row[col])">{{ scope.row[col] }}</a>
+
+                <!-- 股票简称：悬浮展示详情（与主站一致） -->
+                <el-popover
+                  v-else-if="col==='股票简称'"
+                  placement="right"
+                  width="360"
+                  trigger="hover"
+                  @show="onShowDetail(scope.row['股票代码'])"
+                >
+                  <div v-html="hoverDetailHtml"></div>
+                  <span slot="reference">{{ scope.row[col] }}</span>
+                </el-popover>
+
+                <!-- 其他列原样显示 -->
+                <span v-else>{{ scope.row[col] }}</span>
+              </template>
           </el-table-column>
         </el-table>
         <div class="mt12-right">
@@ -175,7 +196,7 @@
     <!-- API 适配层（直接调用 web/src 下已实现的代码） -->
     <script src="http://localhost:5000/static/legacy/legacyApi.js"></script>
     <!-- 业务脚本（Vue2 + Element UI 调用 /api 接口） -->
-    <script src="http://localhost:5000/static/legacy/legacy.js"></script>
+    <script src="http://localhost:5000/static/legacy/legacy.js?v=20250926"></script>
 
     <!-- 因子范围选择弹窗（复用当前页面实例的数据） -->
     <script>

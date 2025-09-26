@@ -2,10 +2,10 @@
 // 依赖在 index.html 中预先注入的 shared/utils/themesCache.core.js
 
 function ensureFactory() {
-  if (typeof window === 'undefined' || !window.__ThemesCacheModuleFactory) {
+  if (typeof window === 'undefined' || !window.ThemesCacheFactory) {
     throw new Error('themesCache.core.js 未加载：请在 index.html 注入共享脚本')
   }
-  return window.__ThemesCacheModuleFactory()
+  return window.ThemesCacheFactory()
 }
 
 export const themesCache = ensureFactory().themesCache

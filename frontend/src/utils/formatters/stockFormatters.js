@@ -132,13 +132,19 @@ export const formatPercentValue = (value) => {
 /**
  * 获取统一的站点 Host（可由运行时 window.__STOCK_HOST 覆盖）
  */
-export const getStockHost = () => (window.__STOCK_HOST || 'http://192.168.1.25:3000')
+export const getStockHost = () => {
+  const mod = window.StockLinkFactory && window.StockLinkFactory()
+  if (mod && typeof mod.getStockHost === 'function') return mod.getStockHost()
+  return (window.__STOCK_HOST || 'http://192.168.1.25:3000')
+}
 
 /**
  * 统一格式化股票代码链接
  * 无论来自哪个页面/模式，链接一律为 {host}/code_{code}
  */
 export const formatStockCodeLink = (stockCode) => {
+  const mod = window.StockLinkFactory && window.StockLinkFactory()
+  if (mod && typeof mod.formatStockCodeLink === 'function') return mod.formatStockCodeLink(stockCode)
   const host = getStockHost()
   return `${host}/code_${stockCode}`
 }
@@ -182,21 +188,18 @@ export const formatStockAnalysisUrl = (stockCode) => {
  */
 const TREE_URL_CACHE = new Map()
 export const formatTreeIdUrl = (stockCode) => {
+  const mod = window.StockLinkFactory && window.StockLinkFactory()
+  if (mod && typeof mod.formatTreeIdUrl === 'function') return mod.formatTreeIdUrl(stockCode)
   if (!stockCode) return '#'
-  
-  if (TREE_URL_CACHE.has(stockCode)) {
-    return TREE_URL_CACHE.get(stockCode)
-  }
-  
-  const url = `http://www.treeid/code_${stockCode}`
-  TREE_URL_CACHE.set(stockCode, url)
-  return url
+  return `http://www.treeid/code_${stockCode}`
 }
 
 /**
  * 是否移动端
  */
 export const isMobile = () => {
+  const mod = window.StockLinkFactory && window.StockLinkFactory()
+  if (mod && typeof mod.isMobile === 'function') return mod.isMobile()
   try {
     const ua = navigator.userAgent || ''
     return /Android|webOS|iPhone|iPod|iPad|BlackBerry|IEMobile|Opera Mini/i.test(ua)
@@ -222,18 +225,8 @@ export const isMobile = () => {
  * @param {string} stockCode - 股票代码
  */
 export const handleStockCodeClick = (event, stockCode) => {
-  try {
-    // 仅考虑通达信：桌面端 + 通达信浏览器
-    const qp = (() => { try { return new URL(window.location.href).searchParams } catch { return new URLSearchParams('') } })()
-    const forceTdx = /^(1|true)$/i.test(qp.get('tdx') || '')
-    const isTdx = !!window.tdxBrowser || forceTdx
-    if (!isMobile() && isTdx) {
-      // 通达信内：跳转到 http://www.treeid/code_股票代码
-      if (event && typeof event.preventDefault === 'function') event.preventDefault()
-      window.location.href = formatTreeIdUrl(stockCode)
-      return 'tdx'
-    }
-  } catch (_) {}
+  const mod = window.StockLinkFactory && window.StockLinkFactory()
+  if (mod && typeof mod.handleStockCodeClick === 'function') return mod.handleStockCodeClick(event, stockCode)
   return false
 }
 

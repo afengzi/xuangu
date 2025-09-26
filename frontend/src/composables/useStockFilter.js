@@ -6,11 +6,31 @@
 import { ref, reactive, computed, onUnmounted, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getStocksByFactorsSelection, getMultiThemeAndFactorInfo, getThemesInfo, getZhibiaoInfo, getCombinedFilterInfo } from '../api/stockAPI.js'
-import { 
-  processFilterChange, 
-  collectFactors, 
-  processStockData
-} from '../utils/helpers/stockFilterUtils.js'
+// 统一复用 shared 核心
+const StockFilter = (typeof window !== 'undefined' && window.StockFilterFactory) ? window.StockFilterFactory() : null
+const collectFactors = (all = {}) => {
+  if (StockFilter && typeof StockFilter.collectFactors === 'function') {
+    return StockFilter.collectFactors(all)
+  }
+  // 兜底：最小实现，避免报错
+  return {
+    factors: [],
+    selectedFactors: { fundamental: [], technical: [], capital: [] },
+    themes: Array.isArray(all?.hotConcept?.themes) ? all.hotConcept.themes : [],
+    indicator: all?.indicator?.special || ''
+  }
+}
+const processStockData = (rows = [], selectedFactors = {}) => {
+  if (StockFilter && typeof StockFilter.processStockData === 'function') {
+    return StockFilter.processStockData(rows, selectedFactors)
+  }
+  return Array.isArray(rows) ? rows.map(x => {
+    const out = { '股票代码': x.code || x['股票代码'] || '' }
+    Object.keys(x || {}).forEach(k => { if (k !== 'code' && k !== 'con_code') out[k] = x[k] })
+    return out
+  }) : []
+}
+// processFilterChange 为页面独有流程，保留本地实现
 import { DEFAULT_CODE_COLUMNS } from '../utils/formatters/stockFormatters.js'
 
 // 固定列顺序的函数
@@ -38,6 +58,77 @@ const orderColumns = (columns) => {
   })
   
   return [...orderedColumns, ...otherColumns]
+}
+
+// 本地页面流程控制：处理筛选条件变化（保留，仅此一处定义）
+const processFilterChange = (filterData, options = {}) => {
+  const {
+    isThemeMode = false,
+    themeColumns = [],
+    dataColumns = [],
+    DEFAULT_CODE_COLUMNS = []
+  } = options
+
+  // 特色指标：仅选指标时走静态；与题材/因子组合时走常规搜索
+  if (filterData?.category === 'indicator' && filterData?.condition === 'special') {
+    const selected = filterData?.value
+    const all = filterData?.allFilters || {}
+    if (!selected) {
+      return {
+        shouldSkip: false,
+        result: {
+          stockList: [],
+          isThemeMode: false,
+          themeColumns: [],
+          dataColumns: [],
+          showTimeFilter: false,
+          lastIndicatorSelected: ''
+        }
+      }
+    }
+
+    // 是否还有其他条件（题材或因子）
+    const hasOther = Object.keys(all).some(k => {
+      if (k === 'indicator') return false
+      if (k === 'hotConcept') return Array.isArray(all?.hotConcept?.themes) && all.hotConcept.themes.length > 0
+      const cat = all[k]
+      return cat && Object.values(cat).some(v => !!v)
+    })
+
+    if (!hasOther) {
+      // 只有指标 -> 静态数据
+      return {
+        shouldSkip: false,
+        result: { selected, isStaticData: true }
+      }
+    }
+    // 有其它条件 -> 继续由常规搜索分支处理
+  }
+
+  // 常规筛选条件处理
+  const next = filterData.allFilters || {}
+
+  // 若全部条件被清空：清空结果并返回，同时重置默认排序为股票代码升序
+  if (Object.keys(next).length === 0) {
+    return {
+      shouldSkip: false,
+      result: {
+        stockList: [],
+        isThemeMode: false,
+        themeColumns: [],
+        dataColumns: [],
+        currentSort: { prop: '股票代码', order: 'ascending' }
+      }
+    }
+  }
+
+  return {
+    shouldSkip: false,
+    result: {
+      filters: next,
+      shouldSearch: true
+    }
+  }
 }
 
 export function useStockFilter() {
