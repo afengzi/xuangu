@@ -201,10 +201,28 @@
       },
       loadThemes: function() {
         var self = this;
-        API.stockAPI.getAllThemes().then(function(res){
-          var list = res && res.themes ? res.themes : [];
-          self.themes = list.map(function(item){ return typeof item === 'string' ? item : (item && item.name) || ''; }).filter(Boolean);
-        });
+        // 直接复用主站缓存逻辑
+        var cacheApi = window.__ThemesCacheModuleFactory && window.__ThemesCacheModuleFactory();
+        if (cacheApi && typeof cacheApi.getThemesData === 'function') {
+          cacheApi.getThemesData(function(){
+            return API.stockAPI.getAllThemes();
+          }).then(function(result){
+            var list = (result && result.themes) ? result.themes : [];
+            self.themes = list.map(function(item){ return typeof item === 'string' ? item : (item && item.name) || ''; }).filter(Boolean);
+          }).catch(function(){
+            // 兜底：直接调接口
+            API.stockAPI.getAllThemes().then(function(res){
+              var list = res && res.themes ? res.themes : [];
+              self.themes = list.map(function(item){ return typeof item === 'string' ? item : (item && item.name) || ''; }).filter(Boolean);
+            });
+          });
+        } else {
+          // 兜底：直接调接口
+          API.stockAPI.getAllThemes().then(function(res){
+            var list = res && res.themes ? res.themes : [];
+            self.themes = list.map(function(item){ return typeof item === 'string' ? item : (item && item.name) || ''; }).filter(Boolean);
+          });
+        }
       },
       loadData: function() {
         var self = this;

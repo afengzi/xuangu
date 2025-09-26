@@ -95,6 +95,8 @@ xuangu_demo/
 │   ├── config/                   # 共享配置
 │   │   ├── factorConfig.js       # 因子配置
 │   │   └── factorMapping.js      # 因子映射
+│   ├── utils/
+│   │   └── themesCache.core.js   # 题材缓存共享核心（主站与 legacy 共用唯一源码）
 │   └── docs/                     # 项目文档
 ├── scripts/                      # 自动化脚本
 │   ├── start_dev.bat             # 启动开发环境
@@ -189,6 +191,13 @@ docker-compose up -d
 ```
 
 ## 使用说明
+
+### 题材缓存（共享源码）
+
+- 唯一源码：`shared/utils/themesCache.core.js`
+- 主站（Vue3）：在 `frontend/index.html` 通过 `<script src="http://localhost:5000/static/shared/utils/themesCache.core.js"></script>` 预注入，然后在 `frontend/src/utils/themesCache.js` 以薄包装方式从核心导出 API（`getThemesData` 等）。
+- Legacy 页面：在 `backend/app/templates/legacy/index.html` 仅引入同一核心脚本，然后在 `backend/app/static/legacy/legacy.js` 通过 `window.__ThemesCacheModuleFactory().getThemesData` 调用，无需重复实现。
+- 维护规范：如需调整缓存策略，只修改 `themesCache.core.js`，两端自动生效。
 
 ### 基本使用流程
 
