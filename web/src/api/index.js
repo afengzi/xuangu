@@ -3,7 +3,8 @@ import { ElMessage } from 'element-plus'
 
 // 创建axios实例
 const service = axios.create({
-  baseURL: process.env.NODE_ENV === 'development' ? '/api' : 'https://api.example.com',
+  // 统一走同源后端 /api，避免生产环境默认指到示例域名
+  baseURL: '/api',
   timeout: 15000,
   headers: { 
     'Content-Type': 'application/json;charset=UTF-8',

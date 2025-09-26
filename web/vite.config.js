@@ -34,6 +34,12 @@ export default defineConfig({
         target: 'http://0.0.0.0:5000',
         changeOrigin: true,
         secure: false
+      },
+      // 将 /legacy 交给后端 Flask 提供的模板，避免在开发环境被前端路由拦截导致刷新循环
+      '/legacy': {
+        target: 'http://0.0.0.0:5000',
+        changeOrigin: true,
+        secure: false
       }
     }
   },

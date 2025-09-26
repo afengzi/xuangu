@@ -9,6 +9,16 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   </head>
   <body>
+    <script>
+      (function () {
+        // 简易 IE11 检测并跳转到 /legacy/
+        var isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
+        if (isIE11) {
+          window.location.replace('/legacy/');
+          return;
+        }
+      })();
+    </script>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>

@@ -1,0 +1,50 @@
+[v-cloak]{display:none}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; font-size: 16px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 12px; }
+.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.title { font-size: 22px; font-weight: 700; }
+.filters { margin-bottom: 12px; }
+
+/* 公共布局与间距 */
+.block-gap { margin: 6px 0 12px 0; }
+.gap-8 { margin: 8px 0; }
+.mt-12 { margin-top: 12px; }
+.mt12-right { margin-top: 12px; text-align: right; }
+.filters-summary { display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding-top:8px; border-top:1px solid #f1f5f9; }
+.table-full { width: 100%; }
+
+/* 文本与标题 */
+.section-label { margin-bottom: 6px; color: #475569; }
+.subsection-label { margin: 10px 0 4px 0; color: #475569; }
+.popover-title { font-weight: 600; margin-bottom: 6px; }
+
+/* 列表与项样式 */
+.popover-scroll { max-height: 360px; overflow: auto; }
+.list-item { display: block; margin: 6px 0; }
+.dialog-pad { padding: 6px 0; }
+
+/* 标签与按钮 */
+.tag-pill { margin-right: 8px; cursor: pointer; }
+.tag-chip { margin: 0 6px 8px 0; cursor: pointer; }
+
+/* 字体大小调整 */
+.section-label { font-size: 16px; }
+.subsection-label { font-size: 15px; }
+.popover-title { font-size: 15px; }
+.list-item { font-size: 15px; }
+.tag-pill { font-size: 15px; }
+.tag-chip { font-size: 15px; }
+.filters-summary { font-size: 15px; }
+
+/* Element UI 组件字体调整 */
+.el-card__header { font-size: 16px; font-weight: 600; }
+.el-table { font-size: 15px; }
+.el-table th { font-size: 15px; }
+.el-table td { font-size: 15px; }
+.el-pagination { font-size: 15px; }
+.el-button { font-size: 15px; }
+.el-tag { font-size: 15px; }
+.el-radio { font-size: 15px; }
+.el-checkbox { font-size: 15px; }
+
+

@@ -3,6 +3,32 @@
  * 提供筛选条件处理、数据转换等业务逻辑
  */
 
+// 使用全局变量（兼容 IE11 和现代浏览器）
+// 优先使用全局变量，如果不存在则使用本地定义
+const FUNDAMENTAL_NAME_MAP = (window.FactorMapping && window.FactorMapping.FUNDAMENTAL_NAME_MAP) || {
+  revenue: '营业收入',
+  pe: '市盈率',
+  grossMargin: '销售毛利率',
+  roe: 'ROE',
+  netProfit: '净利润',
+  pb: '市净率',
+  debtRatio: '资产负债率'
+}
+
+const TECHNICAL_NAME_MAP = (window.FactorMapping && window.FactorMapping.TECHNICAL_NAME_MAP) || {
+  macd: 'MACD',
+  kdj: 'KDJ',
+  boll: 'BOLL',
+  kPattern: '单k组合',
+  ma: '均线'
+}
+
+const CAPITAL_NAME_MAP = (window.FactorMapping && window.FactorMapping.CAPITAL_NAME_MAP) || {
+  bigOrderNet: '大单净量',
+  bigOrderAmount: '大单净额',
+  hkConnect: '陆股通净流入'
+}
+
 /**
  * 收集筛选因子，按后端约定命名
  * @param {Object} all - 所有筛选条件
@@ -19,15 +45,7 @@ export const collectFactors = (all) => {
   
   // 基本面：直接映射为"中文指标名_范围"
   const f = all?.fundamental || {}
-  const fundamentalNameMap = {
-    revenue: '营业收入',
-    pe: '市盈率',
-    grossMargin: '销售毛利率',
-    roe: 'ROE',
-    netProfit: '净利润',
-    pb: '市净率',
-    debtRatio: '资产负债率'
-  }
+  const fundamentalNameMap = FUNDAMENTAL_NAME_MAP
   
   // 统一区间/阈值文案：X以上 -> 大于X；X以下 -> 小于X；X~Y -> X~Y
   // 当 addYi=true（营业收入/净利润）时，在数值后追加"亿"
@@ -101,11 +119,7 @@ export const collectFactors = (all) => {
 
   // 资金面：拼接为"指标_范围"，金额类自动补"万"
   const c = all?.capital || {}
-  const nameMap = {
-    bigOrderNet: '大单净量',
-    bigOrderAmount: '大单净额',
-    hkConnect: '陆股通净流入'
-  }
+  const nameMap = CAPITAL_NAME_MAP
   Object.keys(nameMap).forEach(key => {
     const val = c[key]
     if (!val) return

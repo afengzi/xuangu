@@ -81,6 +81,7 @@ xuangu_demo/
 │   │   ├── mock/                 # Mock数据
 │   │   │   └── stockData.js      # 模拟股票数据
 │   │   ├── utils/                # 工具模块
+│   │   │   ├── factorMapping.js  # 因子中英文映射常量
 │   │   │   └── constants.js      # 常量定义
 │   │   ├── App.vue               # 根组件
 │   │   └── main.js               # 应用入口

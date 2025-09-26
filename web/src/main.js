@@ -4,6 +4,8 @@ import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from './App.vue'
 import router from './router'
+// 导入因子映射，确保全局变量被设置
+import './utils/factorMapping.js'
 
 const app = createApp(App)
 
