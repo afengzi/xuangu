@@ -60,39 +60,49 @@
 
 ```
 xuangu_demo/
-├── web/                           # 前端项目目录
-│   ├── public/                    # 静态资源目录
-│   │   └── vite.svg              # Vite图标
-│   ├── src/                      # 源代码目录
-│   │   ├── api/                  # API接口模块
-│   │   │   ├── index.js          # axios配置和基础请求方法
-│   │   │   └── stockAPI.js       # 股票筛选相关API
-│   │   ├── components/           # 组件目录
-│   │   │   ├── DataRangeSelector/ # 数据范围选择器组件
-│   │   │   │   └── DataRangeSelector.vue # 支持点击即选中、高亮显示的范围选择器
-│   │   │   └── FilterPanel/      # 筛选面板组件
-│   │   │       ├── FilterPanel.vue # 主筛选面板，支持选择器互斥显示
-│   │   │       └── FilterItem.vue # 单个筛选项，支持快速取消功能
-│   │   ├── router/               # 路由配置
-│   │   │   └── index.js          # Vue Router配置，路由守卫和页面权限控制
+├── frontend/                     # 现代前端 (Vue 3 + Vite)
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── common/           # 通用组件
+│   │   │   │   ├── AppHeader/    # 应用头部
+│   │   │   │   ├── DataRangeSelector/ # 数据范围选择器
+│   │   │   │   └── StockTable/   # 股票表格
+│   │   │   └── business/         # 业务组件
+│   │   │       ├── FilterPanel/  # 筛选面板
+│   │   │       └── StockDetail/  # 股票详情
 │   │   ├── views/                # 页面视图
-│   │   │   ├── Login.vue         # 用户登录页面，支持表单验证和状态管理
-│   │   │   └── StockFilter.vue   # 股票筛选主页面，包含导航栏和退出登录功能
-│   │   ├── mock/                 # Mock数据
-│   │   │   └── stockData.js      # 模拟股票数据
-│   │   ├── utils/                # 工具模块
-│   │   │   ├── factorMapping.js  # 因子中英文映射常量
-│   │   │   └── constants.js      # 常量定义
-│   │   ├── App.vue               # 根组件
-│   │   └── main.js               # 应用入口
-│   ├── package.json              # 前端项目配置和依赖
-│   ├── package-lock.json         # 依赖锁定文件
-│   ├── vite.config.js            # Vite构建配置
-│   └── index.html                # HTML入口文件
-├── server/                       # 后端服务目录
-├── demo.py                       # Python演示脚本
-├── .cursor/                      # Cursor IDE规则配置
-│   └── rules/                    # 开发规则
+│   │   ├── api/                  # API接口
+│   │   │   └── modules/          # 模块化API
+│   │   ├── utils/                # 工具函数
+│   │   │   ├── helpers/          # 辅助函数
+│   │   │   └── formatters/       # 格式化函数
+│   │   └── composables/          # Vue 3 组合式函数
+│   ├── public/                   # 静态资源
+│   └── vite.config.js            # Vite配置
+├── backend/                      # 后端服务 (Flask)
+│   ├── app/
+│   │   ├── services/             # 服务层
+│   │   ├── models/               # 模型层
+│   │   ├── routes.py             # 路由定义
+│   │   ├── config.py             # 配置管理
+│   │   └── utils.py              # 工具函数
+│   ├── data/
+│   │   └── sources/              # 数据源
+│   │       └── kaipanla/         # 开盘啦数据源
+│   └── static/                   # 静态文件
+│       └── legacy/               # IE11兼容资源
+├── shared/                       # 共享资源
+│   ├── config/                   # 共享配置
+│   │   ├── factorConfig.js       # 因子配置
+│   │   └── factorMapping.js      # 因子映射
+│   └── docs/                     # 项目文档
+├── scripts/                      # 自动化脚本
+│   ├── start_dev.bat             # 启动开发环境
+│   ├── build_prod.bat            # 构建生产版本
+│   └── clean.bat                 # 清理项目文件
+├── requirements.txt              # Python依赖
+├── docker-compose.yml            # Docker编排
+├── Dockerfile                    # Docker镜像
 └── README.md                     # 项目说明文档
 ```
 
@@ -122,33 +132,60 @@ xuangu_demo/
 ## 快速开始
 
 ### 环境要求
-- Node.js >= 16.0.0
+- Node.js >= 18.0.0
+- Python 3.10
+- Redis >= 6.0
 - npm >= 8.0.0
 
-### 安装依赖
+### 方式一：使用自动化脚本（推荐）
+
+1. **启动开发环境**
 ```bash
-cd web
+scripts/start_dev.bat
+```
+
+2. **构建生产版本**
+```bash
+scripts/build_prod.bat
+```
+
+3. **清理项目文件**
+```bash
+scripts/clean.bat
+```
+
+### 方式二：手动启动
+
+1. **安装后端依赖**
+```bash
+pip install -r requirements.txt
+```
+
+2. **安装前端依赖**
+```bash
+cd frontend
 npm install
 ```
 
-### 启动开发服务器
+3. **启动后端服务**
 ```bash
-cd web
+python run.py
+```
+
+4. **启动前端服务**
+```bash
+cd frontend
 npm run dev
 ```
 
-项目将在 `http://localhost:3000` 启动
+### 访问地址
+- 现代前端: http://localhost:3000
+- IE11兼容: http://localhost:5000/legacy
+- 后端API: http://localhost:5000/api
 
-### 构建生产版本
+### Docker部署
 ```bash
-cd web
-npm run build
-```
-
-### 预览生产构建
-```bash
-cd web
-npm run preview
+docker-compose up -d
 ```
 
 ## 使用说明
