@@ -55,7 +55,10 @@
         pageSize: 20,
         currentPage: 1,
         hoverDetail: {},
-        hoverDetailHtml: ''
+        hoverDetailHtml: '',
+        // 排序状态
+        sortColumn: '',
+        sortOrder: 'ascending'
       };
     },
     computed: {
@@ -117,12 +120,90 @@
       handleSearchResult: function(res, parseFunction) {
         this.tableData = parseFunction(res);
         this.currentPage = 1;
+        // 默认按第一个数值列升序排序
+        this.applyDefaultSort();
         this.showSearchResult(this.tableData);
       },
       
       // 处理筛选错误（复用错误处理逻辑）
       handleSearchError: function(error, operation) {
         this.$message && this.$message.error(operation + '失败: ' + error.message);
+      },
+      
+      // 应用默认排序（按第一个基本面和资金面因子列降序，否则按股票代码升序）
+      applyDefaultSort: function() {
+        if (!this.tableData || this.tableData.length === 0) return;
+        
+        // 找到第一个基本面和资金面因子列
+        var firstRow = this.tableData[0];
+        var sortableColumns = this.dataColumns.filter(function(col) {
+          if (col === '股票代码' || col === '股票简称') return false;
+          // 只对基本面和资金面因子进行排序
+          var isBasicFactor = FC.FACTOR_CATEGORIES.fundamental.indexOf(col) > -1;
+          var isCapitalFactor = FC.FACTOR_CATEGORIES.capital.indexOf(col) > -1;
+          if (!isBasicFactor && !isCapitalFactor) return false;
+          
+          var value = firstRow[col];
+          return value !== null && value !== undefined && !isNaN(parseFloat(value));
+        });
+        
+        if (sortableColumns.length > 0) {
+          // 有基本面和资金面因子，按第一个因子降序排序
+          this.sortColumn = sortableColumns[0];
+          this.sortOrder = 'descending';
+        } else {
+          // 没有基本面和资金面因子，按股票代码升序排序
+          this.sortColumn = '股票代码';
+          this.sortOrder = 'ascending';
+        }
+        this.sortTableData();
+      },
+      
+      // 排序表格数据
+      sortTableData: function() {
+        if (!this.sortColumn || !this.tableData || this.tableData.length === 0) return;
+        
+        var self = this;
+        this.tableData.sort(function(a, b) {
+          var aVal = a[self.sortColumn];
+          var bVal = b[self.sortColumn];
+          
+          // 处理数值类型
+          if (!isNaN(parseFloat(aVal)) && !isNaN(parseFloat(bVal))) {
+            aVal = parseFloat(aVal);
+            bVal = parseFloat(bVal);
+          }
+          
+          // 处理空值
+          if (aVal === null || aVal === undefined) aVal = '';
+          if (bVal === null || bVal === undefined) bVal = '';
+          
+          var result = 0;
+          if (aVal < bVal) result = -1;
+          else if (aVal > bVal) result = 1;
+          
+          return self.sortOrder === 'ascending' ? result : -result;
+        });
+      },
+      
+      // 处理用户点击排序
+      sortChange: function(column) {
+        if (!column.prop) return;
+        
+        this.sortColumn = column.prop;
+        this.sortOrder = column.order || 'ascending';
+        this.sortTableData();
+      },
+      
+      // 判断列是否可排序（基本面和资金面因子可排序，股票代码也可排序）
+      isSortableColumn: function(col) {
+        if (col === '股票简称') return false;
+        // 基本面和资金面因子可排序
+        var isBasicFactor = FC.FACTOR_CATEGORIES.fundamental.indexOf(col) > -1;
+        var isCapitalFactor = FC.FACTOR_CATEGORIES.capital.indexOf(col) > -1;
+        // 股票代码也可排序
+        var isStockCode = col === '股票代码';
+        return isBasicFactor || isCapitalFactor || isStockCode;
       },
       
       // 因子分类配置（使用共享配置，容错）

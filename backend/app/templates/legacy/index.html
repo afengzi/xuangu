@@ -145,13 +145,14 @@
 
       <!-- 表格区域 -->
       <el-card shadow="never">
-          <el-table :data="pagedList" stripe class="table-full">
+          <el-table :data="pagedList" stripe class="table-full" @sort-change="sortChange">
           <el-table-column
             v-for="col in dataColumns"
             :key="col"
             :prop="col"
             :label="getColumnLabel(col)"
             :width="getColumnWidth(col)"
+            :sortable="isSortableColumn(col) ? 'custom' : false"
           >
               <template slot-scope="scope">
                 <!-- 股票代码：仅为链接，无悬浮窗 -->
