@@ -130,14 +130,26 @@
         this.$message && this.$message.error(operation + '失败: ' + error.message);
       },
       
-      // 应用默认排序（按第一个基本面和资金面因子列降序，否则按股票代码升序）
+      // 应用默认排序（优先按热度值降序，然后按第一个基本面和资金面因子列降序，否则按股票代码升序）
       applyDefaultSort: function() {
         if (!this.tableData || this.tableData.length === 0) return;
+        
+        // 优先检查是否有热度值列
+        if (this.dataColumns.indexOf('热度值') > -1) {
+          var firstRow = this.tableData[0];
+          var hotValue = firstRow['热度值'];
+          if (hotValue !== null && hotValue !== undefined && !isNaN(parseFloat(hotValue))) {
+            this.sortColumn = '热度值';
+            this.sortOrder = 'descending';
+            this.sortTableData();
+            return;
+          }
+        }
         
         // 找到第一个基本面和资金面因子列
         var firstRow = this.tableData[0];
         var sortableColumns = this.dataColumns.filter(function(col) {
-          if (col === '股票代码' || col === '股票简称') return false;
+          if (col === '股票代码' || col === '股票简称' || col === '热度值') return false;
           // 只对基本面和资金面因子进行排序
           var isBasicFactor = FC.FACTOR_CATEGORIES.fundamental.indexOf(col) > -1;
           var isCapitalFactor = FC.FACTOR_CATEGORIES.capital.indexOf(col) > -1;
@@ -203,7 +215,9 @@
         var isCapitalFactor = FC.FACTOR_CATEGORIES.capital.indexOf(col) > -1;
         // 股票代码也可排序
         var isStockCode = col === '股票代码';
-        return isBasicFactor || isCapitalFactor || isStockCode;
+        // 热度值列可排序
+        var isHotValue = col === '热度值';
+        return isBasicFactor || isCapitalFactor || isStockCode || isHotValue;
       },
       
       // 因子分类配置（使用共享配置，容错）

@@ -217,13 +217,20 @@ export function useStockFilter() {
         const av = a[prop]
         const bv = b[prop]
         
-        // 数字排序
-        if (typeof av === 'number' && typeof bv === 'number') {
-          return (av - bv) * factor
+        // 处理空值
+        if (av === null || av === undefined) return factor
+        if (bv === null || bv === undefined) return -factor
+        
+        // 数字排序（包括字符串类型的数字）
+        const aNum = parseFloat(av)
+        const bNum = parseFloat(bv)
+        
+        if (!isNaN(aNum) && !isNaN(bNum)) {
+          return (aNum - bNum) * factor
         }
         
         // 字符串排序
-        return String(av ?? '').localeCompare(String(bv ?? '')) * factor
+        return String(av).localeCompare(String(bv)) * factor
       })
     }
 

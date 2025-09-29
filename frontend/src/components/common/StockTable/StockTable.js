@@ -25,8 +25,8 @@ export function useStockTable() {
   const tableRenderKey = ref(0)
   const tableRef = ref(null)
   
-  // 表格排序 - 使用普通对象减少响应式开销
-  const currentSort = { prop: 'code', order: 'ascending' }
+  // 表格排序 - 使用普通对象减少响应式开销，初始值将在组件中动态设置
+  const currentSort = { prop: null, order: null }
   
   // 性能优化：股票悬浮提示相关
   const stockTooltips = ref({})

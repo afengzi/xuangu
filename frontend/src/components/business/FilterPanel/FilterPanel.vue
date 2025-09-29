@@ -372,12 +372,18 @@ const indicatorOptions = computed(() => {
           })
         }
         
-        // 按人气值排序（股票数量优先，然后按最大hot_num）
+        // 按热度值排序（优先按最大热度值，然后按总热度值，最后按股票数量）
         themesArray.sort((a, b) => {
-          if (a.stockCount !== b.stockCount) {
-            return b.stockCount - a.stockCount
+          // 首先按最大热度值排序
+          if (a.maxHotNum !== b.maxHotNum) {
+            return b.maxHotNum - a.maxHotNum
           }
-          return b.maxHotNum - a.maxHotNum
+          // 然后按总热度值排序
+          if (a.totalHotNum !== b.totalHotNum) {
+            return b.totalHotNum - a.totalHotNum
+          }
+          // 最后按股票数量排序
+          return b.stockCount - a.stockCount
         })
         
         allThemes.value = themesArray

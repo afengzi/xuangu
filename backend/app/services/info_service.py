@@ -409,9 +409,9 @@ def get_themes_key() -> list:
             if cursor == 0:
                 break
         
-        # 转换为列表并按人气值排序
+        # 转换为列表并按热度值排序（优先按最大热度值，然后按总热度值，最后按股票数量）
         themes = list(theme_stats.values())
-        themes.sort(key=lambda x: (x['stock_count'], x['max_hot_num']), reverse=True)
+        themes.sort(key=lambda x: (x['max_hot_num'], x['total_hot_num'], x['stock_count']), reverse=True)
         
         # 更新缓存
         _themes_cache = themes
