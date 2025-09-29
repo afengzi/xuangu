@@ -13,7 +13,7 @@
           empty-text="请设置筛选条件后查看结果"
           :height="tableHeight"
           :max-height="tableMaxHeight"
-          :default-sort="isThemeMode ? { prop: (themeColumns[0] || 'code'), order: 'ascending' } : { prop: (dataColumns[0] || 'code'), order: 'ascending' }"
+          :default-sort="getDefaultSort()"
           @sort-change="handleSortChange"
           stripe
           :header-cell-style="headerCellStyle"
@@ -214,13 +214,20 @@ export default {
           const av = a[prop]
           const bv = b[prop]
           
-          // 数字排序优化
-          if (typeof av === 'number' && typeof bv === 'number') {
-            return (av - bv) * factor
+          // 处理空值
+          if (av === null || av === undefined) return factor
+          if (bv === null || bv === undefined) return -factor
+          
+          // 数字排序优化（包括字符串类型的数字）
+          const aNum = parseFloat(av)
+          const bNum = parseFloat(bv)
+          
+          if (!isNaN(aNum) && !isNaN(bNum)) {
+            return (aNum - bNum) * factor
           }
           
           // 字符串排序优化
-          return String(av ?? '').localeCompare(String(bv ?? '')) * factor
+          return String(av).localeCompare(String(bv)) * factor
         })
       } else {
         // 默认按股票代码升序
@@ -272,6 +279,11 @@ export default {
       if (stockTable.currentPage.value > maxPage) stockTable.currentPage.value = 1
     })
 
+    // 监听列配置变化，重新设置默认排序（只在数据列变化时）
+    watch(() => props.dataColumns, () => {
+      setDefaultSort()
+    }, { deep: true })
+
     // 清理定时器
     onUnmounted(() => {
       if (debounceTimer.value) {
@@ -282,8 +294,7 @@ export default {
     // 重置表格状态的方法
     const resetTable = () => {
       stockTable.currentPage.value = 1
-      stockTable.currentSort.prop = 'code'
-      stockTable.currentSort.order = 'ascending'
+      setDefaultSort()
       nextTick(() => {
         if (stockTable.tableRef.value?.clearSort) stockTable.tableRef.value.clearSort()
         stockTable.tableRenderKey.value++
@@ -368,6 +379,28 @@ export default {
       return formatterMap[col] || null
     }
 
+    // 获取默认排序配置
+    const getDefaultSort = () => {
+      const columns = props.isThemeMode ? props.themeColumns : props.dataColumns
+      const defaultColumn = props.isThemeMode ? (props.themeColumns[0] || 'code') : '股票代码'
+      
+      // 优先按热度值降序，否则按默认列升序
+      if (columns.includes('热度值')) {
+        return { prop: '热度值', order: 'descending' }
+      }
+      return { prop: defaultColumn, order: 'ascending' }
+    }
+
+    // 设置默认排序的通用函数
+    const setDefaultSort = () => {
+      const defaultSort = getDefaultSort()
+      stockTable.currentSort.prop = defaultSort.prop
+      stockTable.currentSort.order = defaultSort.order
+    }
+
+    // 初始化默认排序
+    setDefaultSort()
+
     return {
       // 状态
       currentPage: stockTable.currentPage,
@@ -388,6 +421,7 @@ export default {
       handlePageSizeChange,
       handleCurrentPageChange,
       handleSortChange,
+      getDefaultSort,
       handleDateRangeChange,
       dateRangeProxy,
       resetTable,
