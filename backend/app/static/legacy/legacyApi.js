@@ -10,7 +10,7 @@
   // 全局 API 对象
   window.LegacyAPI = {
     // 基础配置
-    API_BASE: 'http://localhost:5000/api',
+    API_BASE: 'http://localhost:5001/api',
     
     // 认证头
     getAuthHeaders: function() {

@@ -16,6 +16,7 @@ def create_app():
         # 获取项目根目录
         root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         shared_dir = os.path.join(root_dir, 'shared')
+        print(f"Debug: Serving {filename} from {shared_dir}")  # 调试信息
         return send_from_directory(shared_dir, filename)
     
     # 注册蓝图

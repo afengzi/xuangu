@@ -8,18 +8,18 @@
     <title>选股助手（IE 兼容版）</title>
     <meta name="description" content="IE11 兼容的股票筛选页面" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-ui@2.15.14/lib/theme-chalk/index.css" />
-    <link rel="stylesheet" href="http://localhost:5000/static/legacy/legacy.css">
+    <link rel="stylesheet" href="http://localhost:5001/static/legacy/legacy.css">
     <!-- 必备 polyfills for IE11 -->
     <script src="https://cdn.jsdelivr.net/npm/es6-promise/dist/es6-promise.auto.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/whatwg-fetch/dist/fetch.umd.min.js"></script>
     <!-- 题材缓存工具（与主站一致的缓存逻辑） -->
-    <script src="http://localhost:5000/static/shared/utils/themesCacheCore.js?v=20250926"></script>
+    <script src="http://localhost:5001/static/shared/utils/themesCacheCore.js?v=20250926"></script>
     <!-- 股票代码跳转共享逻辑（与主站一致） -->
-    <script src="http://localhost:5000/static/shared/utils/stockLinkCore.js?v=20250926"></script>
+    <script src="http://localhost:5001/static/shared/utils/stockLinkCore.js?v=20250926"></script>
     <!-- 因子/数据处理共享核心（与主站一致） -->
-    <script src="http://localhost:5000/static/shared/utils/stockFilterCore.js?v=20250926"></script>
+    <script src="http://localhost:5001/static/shared/utils/stockFilterCore.js?v=20250926"></script>
     <!-- 股票悬浮提示渲染共享逻辑（与主站一致） -->
-    <script src="http://localhost:5000/static/shared/utils/stockTooltipCore.js?v=20250926"></script>
+    <script src="http://localhost:5001/static/shared/utils/stockTooltipCore.js?v=20250926"></script>
   </head>
   <body>
     {% raw %}
@@ -191,13 +191,13 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/element-ui@2.15.14/lib/index.js"></script>
         <!-- 主站因子映射全局变量（UMD 全局 + CommonJS） -->
-        <script src="http://localhost:5000/static/shared/config/factorMapping.js"></script>
+        <script src="http://localhost:5001/static/shared/config/factorMapping.js"></script>
         <!-- 主站因子配置全局变量（UMD 全局 + CommonJS） -->
-        <script src="http://localhost:5000/static/shared/config/factorConfig.js"></script>
+        <script src="http://localhost:5001/static/shared/config/factorConfig.js"></script>
     <!-- API 适配层（直接调用 web/src 下已实现的代码） -->
-    <script src="http://localhost:5000/static/legacy/legacyApi.js"></script>
+    <script src="http://localhost:5001/static/legacy/legacyApi.js"></script>
     <!-- 业务脚本（Vue2 + Element UI 调用 /api 接口） -->
-    <script src="http://localhost:5000/static/legacy/legacy.js?v=20250926"></script>
+    <script src="http://localhost:5001/static/legacy/legacy.js?v=20250926"></script>
 
     <!-- 因子范围选择弹窗（复用当前页面实例的数据） -->
     <script>
