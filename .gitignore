@@ -1,0 +1,60 @@
+# ---- OS / Editor ----
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+.history/
+.cache/
+
+# ---- Node / Frontend ----
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+*.tsbuildinfo
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+coverage/
+htmlcov/
+
+# ---- Build / Packaging ----
+dist/
+build/
+*.log
+logs/
+
+# ---- Environment & Local Config ----
+.env
+.env.*
+frontend/.env
+frontend/.env.*
+# Keep shared examples in repo
+!env.example
+
+# ---- Docker / Compose (local state) ----
+**/docker-data/
+**/redis_data/
+
+# ---- Misc Tools ----
+.pnp.*
+.npm/
+.yarn/
+.nyc_output/
+
+# ---- Cache / Temp ----
+.tmp/
+.temp/
+
