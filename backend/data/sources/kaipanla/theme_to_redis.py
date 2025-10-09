@@ -7,7 +7,7 @@ import time
 import sys
 import os
 # 获取backend目录路径（包含app模块的目录）
-BACKEND_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BACKEND_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 if BACKEND_ROOT not in sys.path:
     sys.path.append(BACKEND_ROOT)
 
