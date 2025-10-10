@@ -119,17 +119,18 @@ def delete_redis():
 if __name__ == '__main__':
     # 执行写入（默认取昨天）
     # schedule.every().day.at("08:29").do(delete_redis)
-    schedule.every().day.at("08:30").do(theme_to_redis)
-    print("定时器开始启动...")
-    try:
-        while True:
-            schedule.run_pending()
-            time.sleep(1)
-    except Exception as e:
-        print(f"定时器运行失败: {e}")
-    print("定时器结束")
+    # schedule.every().day.at("08:30").do(theme_to_redis)
+    # print("定时器开始启动...")
+    # try:
+    #     while True:
+    #         schedule.run_pending()
+    #         time.sleep(1)
+    # except Exception as e:
+    #     print(f"定时器运行失败: {e}")
+    # print("定时器结束")
     # delete_redis()
-    # theme_to_redis()
+    theme_to_redis()
+    # pro = init_tushare()
     # df = pro.query('daily', ts_code='000001.SZ', start_date='20180701', end_date='20180718')
     # df = pro.daily(trade_date='20250909')
     # print(df)

@@ -338,23 +338,25 @@ zhibiao_factors = ['涨幅大于7.5 市值大于150亿  多头排列', '涨幅�
 zhibiao = ['打板', '追涨', '低吸', '龙头']
 def zhibiao2factor():
     """
-    获取指标因子并且写入redis
+    获取指标因子并且写入redis，使zhibiao和zhibiao_factors一一对应
     """
     try:
         r = connect_redis()
-        for factor in zhibiao:
+        # 使用zip函数将zhibiao_factors和zhibiao一一配对
+        for factor, zb in zip(zhibiao_factors, zhibiao):
             df = pywencai.get(query=factor, sort_key=factor, sort_order='asc',loop=True)
             if df is not None:
                 for _, row in safe_iterate_data(df, factor):
                     if row['code'] != '':
-                        if row['code'] not in r.smembers(f"zhibiao:{factor}"):
-                            r.sadd(f"zhibiao:{factor}", row['code'])
-                            print(f"{row['code']} 已存在")
+                        if row['code'] not in r.smembers(f"zhibiao:{zb}"):
+                            r.sadd(f"zhibiao:{zb}", row['code'])
+                        else:
+                            print(f"{row['code']} 在 {zb} 中已存在")
             else:
                 print(f"{factor} 为空")
         r.close()
     except Exception as e:
-        print(f"处理指标因子 {factor} 失败: {e}")
+        print(f"处理指标因子失败: {e}")
 
 def main():
     delete_redis()
@@ -402,4 +404,4 @@ if __name__ == "__main__":
     #     print(row)
     # zhibiao2factor()
     # df = pywencai.get(query='市净率', sort_key='市净率', sort_order='asc')
-    # print(df['市净率(pb)[20250915]']) 
+    # print(df['市净率(pb)[20250915]'])

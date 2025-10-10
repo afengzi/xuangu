@@ -1,9 +1,9 @@
 import os
 from dotenv import load_dotenv
 
-# 明确指定项目根目录的 .env（可省略，默认会向上查找）
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-load_dotenv(os.path.join(BASE_DIR, '.env'))
+# 只从项目根目录加载 .env（.../xuangu_demo/.env）
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+load_dotenv(os.path.join(PROJECT_ROOT, '.env'))
 
 class Config:
     # 优先使用 REDIS_HOST/REDIS_PORT 等，更直观；兼容旧的 LOCALHOST/PORT 等
