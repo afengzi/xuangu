@@ -1,12 +1,4 @@
-import sys
-import os
-
-# 把项目根目录加入 sys.path，便于复用 Redis 连接
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if PROJECT_ROOT not in sys.path:
-    sys.path.append(PROJECT_ROOT)
-
-from app.services.data_service import connect_redis
+from ....app.services.data_service import connect_redis
 
 
 def get_theme_names(keyword: str = '') -> list:

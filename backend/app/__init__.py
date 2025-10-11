@@ -1,5 +1,5 @@
 from flask import Flask, send_from_directory
-from app.config import Config
+from .config import Config
 from flask_cors import CORS
 import os
 
@@ -20,11 +20,11 @@ def create_app():
         return send_from_directory(shared_dir, filename)
     
     # 注册蓝图
-    from app.routes import main
+    from .routes import main
     app.register_blueprint(main, url_prefix='/api')
 
     # 注册 IE11 兼容页面蓝图（无前缀，直接提供 /legacy/ 页面）
-    from app.legacy import legacy_bp
+    from .legacy import legacy_bp
     app.register_blueprint(legacy_bp)
     
     return app

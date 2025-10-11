@@ -1,6 +1,6 @@
 from flask import request, jsonify
-from app.services.info_service import get_factors_info, get_themes_info, get_multi_theme_and_factor_all_info, get_detail_info_by_code, get_themes_key, get_zhibiao_info, get_zhibiao_factor_theme_info
-from app.utils import generate_token
+from .services.info_service import get_factors_info, get_themes_info, get_multi_theme_and_factor_all_info, get_detail_info_by_code, get_themes_key, get_zhibiao_info, get_zhibiao_factor_theme_info
+from .utils import generate_token
 from flask import Blueprint
 
 main = Blueprint('main', __name__)

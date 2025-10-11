@@ -1,13 +1,6 @@
-import sys
-import os
 import time
 import requests
-# 把项目根目录（.../xuangu_demo）加入 sys.path
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-if PROJECT_ROOT not in sys.path:
-    sys.path.append(PROJECT_ROOT)
-
-from app.services.data_service import connect_redis
+from .data_service import connect_redis
 
 # 题材缓存
 _themes_cache = None

@@ -1,17 +1,8 @@
-from re import L
-import sys
-import os
-
-# 把项目根目录（.../xuangu_demo）加入 sys.path
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-if PROJECT_ROOT not in sys.path:
-    sys.path.append(PROJECT_ROOT)
-
 import pywencai
 import redis
 import time
 import pandas as pd
-from app.config import Config
+from ..config import Config
 
 config = Config()
 
@@ -335,23 +326,23 @@ fundamental_factors = ['营业收入_小于5亿', '营业收入_5~10亿', '营�
 fundamental_codes = ['营业收入', '市盈率', '销售毛利率', 'ROE', '净利润', '市净率', '资产负债率']
 
 zhibiao_factors = ['涨幅大于7.5 市值大于150亿  多头排列', '涨幅大于4 量比大于2 上影线小于1', '跌幅大于4 量比小于0.8  下影线小于2', '最近十日涨停数量大于5']
-zhibiao = ['打板', '追涨', '低吸', '龙头']
+zhibiaos = ['打板', '追涨', '低吸', '龙头']
 def zhibiao2factor():
     """
-    获取指标因子并且写入redis，使zhibiao和zhibiao_factors一一对应
+    获取指标因子并且写入redis
     """
     try:
         r = connect_redis()
-        # 使用zip函数将zhibiao_factors和zhibiao一一配对
-        for factor, zb in zip(zhibiao_factors, zhibiao):
+        # 遍历指标因子和对应的指标名称
+        for factor, zhibiao in zip(zhibiao_factors, zhibiaos):
             df = pywencai.get(query=factor, sort_key=factor, sort_order='asc',loop=True)
             if df is not None:
                 for _, row in safe_iterate_data(df, factor):
                     if row['code'] != '':
-                        if row['code'] not in r.smembers(f"zhibiao:{zb}"):
-                            r.sadd(f"zhibiao:{zb}", row['code'])
+                        if row['code'] not in r.smembers(f"zhibiao:{zhibiao}"):
+                            r.sadd(f"zhibiao:{zhibiao}", row['code'])
                         else:
-                            print(f"{row['code']} 在 {zb} 中已存在")
+                            print(f"{row['code']} 已存在")
             else:
                 print(f"{factor} 为空")
         r.close()
@@ -398,10 +389,10 @@ def delete_redis():
     r.close()
 
 if __name__ == "__main__":
-    main()
+    # main()
     # df = pywencai.get(query='涨幅大于7.5 市值大于150亿  多头排列', sort_key='涨幅大于7.5 市值大于150亿  多头排列', sort_order='asc')
     # for _, row in safe_iterate_data(df, '涨幅大于7.5 市值大于150亿  多头排列'):
     #     print(row)
-    # zhibiao2factor()
+    zhibiao2factor()
     # df = pywencai.get(query='市净率', sort_key='市净率', sort_order='asc')
     # print(df['市净率(pb)[20250915]'])

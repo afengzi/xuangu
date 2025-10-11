@@ -1,17 +1,15 @@
-from token_manager import get_valid_token
+import sys
+import os
+
+# 使用相对导入或从已配置的PYTHONPATH导入
+from .token_manager import get_valid_token
 import tushare as ts
 from datetime import datetime, timedelta
 import schedule
 import time
-# 把项目根目录加入 sys.path，便于复用 Redis 连接
-import sys
-import os
-# 获取backend目录路径（包含app模块的目录）
-BACKEND_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-if BACKEND_ROOT not in sys.path:
-    sys.path.append(BACKEND_ROOT)
 
-from app.services.data_service import connect_redis
+# 使用相对导入
+from ....app.services.data_service import connect_redis
 
 def init_tushare():
     """

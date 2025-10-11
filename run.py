@@ -9,13 +9,8 @@ sys.path.insert(0, current_dir)
 backend_dir = os.path.join(current_dir, 'backend')
 sys.path.insert(0, backend_dir)
 
-# 确保backend/app目录在Python路径中
-app_dir = os.path.join(backend_dir, 'app')
-if app_dir not in sys.path:
-    sys.path.insert(0, app_dir)
-
 try:
-    from app import create_app  # type: ignore
+    from .backend.app import create_app  # type: ignore
 except ImportError as e:
     print(f"导入失败: {e}")
     sys.exit(1)
