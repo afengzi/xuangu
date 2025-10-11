@@ -22,7 +22,7 @@ if backend_path not in sys.path:
 def run_daily_update():
     """运行每日数据更新任务"""
     try:
-        from .backend.app.models.daily_updater import update_all_data
+        from backend.app.models.daily_updater import update_all_data
         print("开始执行每日数据更新任务...")
         update_all_data()
         print("每日数据更新任务执行完成")
@@ -34,7 +34,7 @@ def run_daily_update():
 def run_theme_update():
     """运行题材数据更新任务"""
     try:
-        from .backend.data.sources.kaipanla.theme_to_redis import theme_to_redis
+        from backend.data.sources.kaipanla.theme_to_redis import theme_to_redis
         print("开始执行题材数据更新任务...")
         theme_to_redis()
         print("题材数据更新任务执行完成")
@@ -46,7 +46,7 @@ def run_theme_update():
 def run_web_server():
     """运行Web服务器"""
     try:
-        from .backend.app import create_app
+        from backend.app import create_app
         app = create_app()
         print("启动Web服务器...")
         app.run(debug=True, host='0.0.0.0', port=5001)
