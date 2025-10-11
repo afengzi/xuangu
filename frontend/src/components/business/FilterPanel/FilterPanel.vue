@@ -36,7 +36,7 @@
             <!-- 热门概念：直接多行展示题材名称 -->
             <div v-if="categoryKey === 'hotConcept' && category.status === 'active'" class="conditions-container">
               <div class="hot-theme-list" title="热门概念">
-                <!-- 显示前10个热门题材 -->
+                <!-- 固定显示前10个热门题材 -->
                 <div
                   v-for="t in topThemes"
                   :key="t.name"
@@ -45,6 +45,16 @@
                   @click="handleSelectTheme(t.name)"
                 >
                   <span class="theme-name">{{ t.name }}</span>
+                </div>
+                
+                <!-- 显示已选择但不在前10中的题材 -->
+                <div
+                  v-for="t in selectedAdditionalThemes"
+                  :key="'selected-' + t"
+                  class="hot-theme-tag filter-tag selected has-value"
+                  @click="handleSelectTheme(t)"
+                >
+                  <span class="theme-name">{{ t }}</span>
                 </div>
                 
                 <!-- 更多按钮 -->
@@ -148,7 +158,7 @@
       
       <div class="theme-content">
         <div class="theme-header">
-          <span class="theme-title">所有热门题材</span>
+          <span class="theme-title">更多热门题材</span>
           <el-button 
             link
             class="close-btn"
@@ -177,7 +187,7 @@
           <div 
             v-for="theme in filteredThemes" 
             :key="theme.name"
-            class="theme-item"
+            class="theme-item filter-tag"
             :class="{ 'selected': selectedThemes.includes(theme.name) }"
             @click="handleSelectThemeFromPopover(theme.name)"
           >
@@ -198,8 +208,7 @@ import { FILTER_CATEGORIES, ALL_FILTERS } from '@shared/config/constants.js'
 import { get } from '../../../api/index.js'
 import { getAllThemes, getThemesInfo } from '../../../api/stockAPI.js'
 import { getThemesData } from '../../../utils/themesCache.js'
-import { Close, Search } from '@element-plus/icons-vue'
-import { TrendCharts } from '@element-plus/icons-vue'
+import { Close, Search, TrendCharts } from '@element-plus/icons-vue'
 
 export default {
   name: 'FilterPanel',
@@ -236,13 +245,29 @@ export default {
       return allThemes.value.slice(0, 10)
     })
 
+    // 计算已选择但不在前10中的题材
+    const selectedAdditionalThemes = computed(() => {
+      // 确保依赖的值存在
+      if (!selectedThemes.value || !topThemes.value) {
+        return []
+      }
+      
+      // 获取前10个题材的名称
+      const topThemeNames = topThemes.value.map(t => t.name)
+      // 返回已选择但不在前10中的题材
+      return selectedThemes.value.filter(theme => !topThemeNames.includes(theme))
+    })
+
     // 计算过滤后的题材列表（用于弹窗搜索）
     const filteredThemes = computed(() => {
+      // 获取除了前10个固定显示的题材之外的剩余题材
+      const remainingThemes = allThemes.value.slice(10)
+      
       if (!searchKeyword.value.trim()) {
-        return allThemes.value
+        return remainingThemes
       }
       const keyword = searchKeyword.value.toLowerCase()
-      return allThemes.value.filter(theme => 
+      return remainingThemes.filter(theme => 
         theme.name.toLowerCase().includes(keyword)
       )
     })

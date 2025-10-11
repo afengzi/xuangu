@@ -138,15 +138,19 @@ export default {
 </script>
 
 <style scoped>
+@import './styles/filter-tag.css';
+
 .filter-item {
   display: inline-flex;
   align-items: center;
   margin: 0;
 }
 
+/* 覆盖统一样式中不需要的部分 */
 .filter-tag {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   height: 32px;
   padding: 0 12px;
   border: 1px solid #cbd5e1;
@@ -155,16 +159,16 @@ export default {
   transition: all 0.3s ease;
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(5px);
-  font-size: 13px;
+  font-size: 14px;
   color: #475569;
   position: relative;
   font-weight: 500;
   white-space: nowrap;
   box-sizing: border-box;
+  text-align: center;
 }
 
-.filter-tag:hover,
-.filter-tag.hover {
+.filter-tag:hover {
   border-color: #3b82f6;
   background: rgba(59, 130, 246, 0.05);
   color: #1e40af;
@@ -172,14 +176,16 @@ export default {
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
 }
 
-.filter-tag.has-value {
+.filter-tag.has-value,
+.filter-tag.hover {
   border-color: #3b82f6;
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: #fff;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-.filter-tag.has-value:hover {
+.filter-tag.has-value:hover,
+.filter-tag.hover:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
@@ -192,22 +198,27 @@ export default {
 }
 
 .filter-name {
-  font-weight: 600;
+  font-weight: 500;
+  color: inherit;
 }
 
 .unit {
+  margin-left: 4px;
   font-size: 12px;
-  opacity: 0.9;
-  font-weight: normal;
+  opacity: 0.8;
+  color: inherit;
 }
 
 .selected-value {
+  margin-left: 6px;
   font-weight: 600;
+  color: inherit;
 }
 
 .disabled-text {
-  font-size: 12px;
-  color: #94a3b8;
-  font-weight: 500;
+  margin-left: 6px;
+  font-style: italic;
+  opacity: 0.7;
+  color: inherit;
 }
 </style>

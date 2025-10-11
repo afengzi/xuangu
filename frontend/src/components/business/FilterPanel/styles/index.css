@@ -40,12 +40,14 @@
   padding-top: 6px;
   font-weight: 500;
   color: #606266;
+  font-size: 15px; /* 增加分类标签字体大小 */
 }
 
 .category-name {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  font-size: 15px; /* 增加分类名称字体大小 */
 }
 
 .category-name.disabled {
@@ -64,11 +66,7 @@
 .indicator-badge {
   font-weight: 500;
   color: #409eff;
-}
-
-.category-conditions {
-  flex: 1;
-  min-width: 0;
+  font-size: 15px; /* 增加特色指标字体大小 */
 }
 
 .conditions-container {
@@ -85,28 +83,39 @@
   align-items: center;
 }
 
-.hot-theme-tag, .indicator-btn {
-  cursor: pointer;
-  transition: all 0.3s ease;
-  max-width: 120px;
+.selected-themes-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.hot-theme-tag, .indicator-btn, .selected-theme-tag {
+  /* 使用统一的筛选条件样式 */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: 32px;
   padding: 0 12px;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(5px);
-  font-size: 13px;
+  font-size: 14px;
   color: #475569;
   position: relative;
   font-weight: 500;
   white-space: nowrap;
   box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  text-align: center;
 }
 
-.hot-theme-tag:hover, .indicator-btn:hover {
+.hot-theme-tag:hover, .indicator-btn:hover, .selected-theme-tag:hover {
   border-color: #3b82f6;
   background: rgba(59, 130, 246, 0.05);
   color: #1e40af;
@@ -114,36 +123,54 @@
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
 }
 
-.hot-theme-tag.selected, .indicator-btn.selected {
+.hot-theme-tag.selected,
+.hot-theme-tag.has-value,
+.indicator-btn.selected,
+.indicator-btn.has-value,
+.selected-theme-tag.selected,
+.selected-theme-tag.has-value {
   border-color: #3b82f6;
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: #fff;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-.hot-theme-tag.has-value, .indicator-btn.has-value {
-  border-color: #3b82f6;
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.hot-theme-tag.has-value:hover, .indicator-btn.has-value:hover {
+.hot-theme-tag.selected:hover,
+.hot-theme-tag.has-value:hover,
+.indicator-btn.selected:hover,
+.indicator-btn.has-value:hover,
+.selected-theme-tag.selected:hover,
+.selected-theme-tag.has-value:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
 
-.hot-theme-tag .theme-name, .indicator-btn .theme-name {
+.hot-theme-tag.disabled,
+.indicator-btn.disabled {
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border-color: #e2e8f0;
+  color: #94a3b8;
+}
+
+.hot-theme-tag .theme-name, .indicator-btn .theme-name, .selected-theme-tag .theme-name {
   display: inline-block;
-  max-width: 100px;
+  max-width: none; /* 移除最大宽度限制，让题材完整显示 */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   vertical-align: middle;
 }
 
+.cancel-icon {
+  margin-left: 6px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
 .more-btn {
   cursor: pointer;
+  font-size: 14px; /* 增加字体大小 */
 }
 
 .pending-status, .loading-status {
@@ -218,22 +245,52 @@
 .theme-list {
   max-height: 300px;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .theme-item {
-  padding: 8px 12px;
+  /* 使用统一的筛选条件样式 */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  height: 32px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+  font-size: 14px;
+  color: #475569;
+  position: relative;
+  font-weight: 500;
+  white-space: nowrap;
+  box-sizing: border-box;
+  text-align: center;
 }
 
 .theme-item:hover {
-  background-color: #f5f7fa;
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+  color: #1e40af;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
 }
 
 .theme-item.selected {
-  background-color: #ecf5ff;
-  color: #409eff;
+  border-color: #3b82f6;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.theme-item.selected:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
 
 .theme-item .theme-name {
