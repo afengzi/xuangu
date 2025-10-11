@@ -43,6 +43,7 @@ import AppHeader from '../components/common/AppHeader/AppHeader.vue'
 import StockTable from '../components/common/StockTable/StockTable.vue'
 import StockDetail from '../components/business/StockDetail/StockDetail.vue'
 import { useStockFilter } from '../composables/useStockFilter.js'
+import { useStockTable } from '../components/common/StockTable/StockTable.js'
 
 export default {
   name: 'StockFilter',
@@ -54,11 +55,24 @@ export default {
   },
   setup() {
     const stockFilter = useStockFilter()
+    const stockTable = useStockTable()
+
+    // 处理筛选条件变化
+    const handleFilterChange = (filterData) => {
+      // 清除股票详情缓存，确保在筛选条件变化后能获取最新的详情数据
+      if (stockTable.tooltipCache && typeof stockTable.tooltipCache.value.clear === 'function') {
+        stockTable.tooltipCache.value.clear();
+      }
+      
+      // 调用原始的处理函数
+      stockFilter.handleFilterChange(filterData)
+    }
 
     const handleLogout = () => {}
 
     return {
       ...stockFilter,
+      handleFilterChange, // 使用自定义的处理函数
       handleLogout
     }
   }
@@ -66,5 +80,26 @@ export default {
 </script>
 
 <style scoped>
-@import '../styles/stockFilter.css';
-</style> 
+.stock-filter-page {
+  width: 70%;
+  margin: 0 auto;
+  padding: 5px 0;
+}
+
+.page-content {
+  margin-top: 5px;
+}
+
+/* 响应式调整 */
+@media (max-width: 1200px) {
+  .stock-filter-page {
+    width: 90%;
+  }
+}
+
+@media (max-width: 768px) {
+  .stock-filter-page {
+    width: 95%;
+  }
+}
+</style>

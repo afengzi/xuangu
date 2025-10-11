@@ -1,0 +1,69 @@
+.data-range-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.data-range-selector .el-date-editor {
+  width: 220px;
+}
+
+.data-range-selector .range-label {
+  color: #606266;
+  font-size: 14px;
+}
+
+.range-content {
+  padding: 12px;
+}
+
+.range-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.range-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #303133;
+}
+
+.close-btn {
+  padding: 4px;
+  margin-right: -4px;
+}
+
+.range-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.range-item {
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.range-item:hover {
+  background: rgba(59, 130, 246, 0.05);
+  color: #1e40af;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+}
+
+.range-item.selected {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}

@@ -1,0 +1,6 @@
+/* 主样式文件入口 */
+@import './base/variables.css';
+@import './base/reset.css';
+@import './base/common.css';
+
+/* 页面样式 */

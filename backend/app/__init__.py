@@ -1,11 +1,16 @@
+import os
+import logging
 from flask import Flask, send_from_directory
 from .config import Config
 from flask_cors import CORS
-import os
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+    
+    # 配置日志
+    log_level = getattr(Config, 'LOG_LEVEL', 'INFO')
+    logging.basicConfig(level=getattr(logging, log_level.upper(), logging.INFO))
     
     # 启用CORS支持前端跨域请求
     CORS(app)

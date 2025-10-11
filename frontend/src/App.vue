@@ -30,6 +30,7 @@ export default {
     })
   }
 }
+
 </script>
 
 <style>
@@ -65,4 +66,4 @@ body {
 ::-webkit-scrollbar-track {
   background: #f8fafc;
 }
-</style> 
+</style>

@@ -1,0 +1,46 @@
+/* StockDetail组件样式 */
+.stock-detail {
+  padding: 20px;
+}
+
+.stock-detail :deep(.el-descriptions__header) {
+  margin-bottom: 10px;
+}
+
+.stock-detail :deep(.el-descriptions__title) {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.stock-detail :deep(.el-descriptions__label) {
+  width: 100px;
+  font-weight: 500;
+}
+
+.stock-detail :deep(.el-descriptions__content) {
+  font-weight: 400;
+}
+
+/* 涨跌颜色 */
+.up {
+  color: #f56c6c;
+}
+
+.down {
+  color: #67c23a;
+}
+
+.flat {
+  color: #909399;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .stock-detail {
+    padding: 10px;
+  }
+  
+  .stock-detail :deep(.el-descriptions__label) {
+    width: 80px;
+  }
+}

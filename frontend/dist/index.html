@@ -7,11 +7,11 @@
     <meta name="description" content="基于Vue3 + Element Plus开发的股票筛选分析web应用，提供多维度的股票筛选功能" />
     <meta name="keywords" content="股票筛选,选股助手,投资分析,股票分析,Vue3,Element Plus" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <script type="module" crossorigin src="/assets/index-CUj4wEvc.js"></script>
+    <script type="module" crossorigin src="/assets/index-DwTkx1TT.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/vue-vendor-DQZkn0cN.js">
-    <link rel="modulepreload" crossorigin href="/assets/element-vendor-B-6OsB-C.js">
     <link rel="modulepreload" crossorigin href="/assets/utils-ztdpVPaQ.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-B_hfEpUu.css">
+    <link rel="modulepreload" crossorigin href="/assets/element-vendor-B-6OsB-C.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-UkamCLvc.css">
   </head>
   <body>
     <script>
@@ -24,6 +24,15 @@
         }
       })();
     </script>
+    <!-- 先注入 shared 全局变量（UMD），供主站使用 -->
+    <script src="/shared/config/factorMapping.js"></script>
+    <script src="/shared/config/factorConfig.js"></script>
+    <!-- 注入共享题材缓存核心源码（供 ESM 包装使用） -->
+    <script src="/shared/utils/themesCacheCore.js"></script>
+    <!-- 注入共享股票链接核心源码（主站与 legacy 共享） -->
+    <script src="/shared/utils/stockLinkCore.js"></script>
+    <!-- 注入共享筛选核心（因子收集/数据映射，与 legacy 共享） -->
+    <script src="/shared/utils/stockFilterCore.js"></script>
     <div id="app"></div>
   </body>
 </html> 

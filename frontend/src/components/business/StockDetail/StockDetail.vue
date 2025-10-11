@@ -71,23 +71,5 @@ export default {
 </script>
 
 <style scoped>
-.stock-detail {
-  padding: 20px 0;
-}
-
-/* 价格颜色样式 */
-:deep(.price-up) {
-  color: #ef4444;
-  font-weight: 600;
-}
-
-:deep(.price-down) {
-  color: #22c55e;
-  font-weight: 600;
-}
-
-:deep(.price-neutral) {
-  color: #64748b;
-  font-weight: 600;
-}
+@import './styles/index.css';
 </style>

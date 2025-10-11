@@ -453,5 +453,5 @@ export default {
 </script>
 
 <style scoped>
-@import './StockTable.css';
+@import './styles/index.css';
 </style>

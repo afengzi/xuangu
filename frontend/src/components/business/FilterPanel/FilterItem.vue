@@ -17,15 +17,6 @@
       
       <!-- 显示选中的值 -->
       <span v-if="selectedValue" class="selected-value">: {{ selectedValue }}</span>
-      
-      <!-- 取消按钮 -->
-      <el-icon 
-        v-if="selectedValue" 
-        class="cancel-btn"
-        @click.stop="handleCancel"
-      >
-        <Close />
-      </el-icon>
     </div>
     
     <!-- 禁用状态 -->
@@ -52,14 +43,12 @@
 
 <script>
 import { ref, computed } from 'vue'
-import { Close } from '@element-plus/icons-vue'
 import DataRangeSelector from '../../common/DataRangeSelector/DataRangeSelector.vue'
 
 export default {
   name: 'FilterItem',
   components: {
-    DataRangeSelector,
-    Close
+    DataRangeSelector
   },
   props: {
     // 筛选条件配置
@@ -109,7 +98,17 @@ export default {
     // 点击整个区域
     const handleClick = () => {
       if (!isDisabled.value) {
-        emit(props.isSelectorOpen ? 'selector-close' : 'selector-open')
+        // 如果已有选中值，则取消选择
+        if (props.selectedValue) {
+          emit('item-change', {
+            key: props.conditionKey,
+            value: '',
+            condition: props.condition
+          })
+        } else {
+          // 如果没有选中值，则打开选择器
+          emit(props.isSelectorOpen ? 'selector-close' : 'selector-open')
+        }
       }
     }
     
@@ -125,17 +124,6 @@ export default {
     // 关闭选择器
     const handleSelectorClose = () => emit('selector-close')
     
-    // 取消选择
-    const handleCancel = () => {
-      // 重置鼠标悬停状态，避免取消后依然高亮
-      isHovering.value = false
-      emit('item-change', {
-        key: props.conditionKey,
-        value: '',
-        condition: props.condition
-      })
-    }
-    
     return {
       isHovering,
       isDisabled,
@@ -143,8 +131,7 @@ export default {
       handleMouseLeave,
       handleClick,
       handleRangeSelect,
-      handleSelectorClose,
-      handleCancel
+      handleSelectorClose
     }
   }
 }
@@ -189,7 +176,6 @@ export default {
   border-color: #3b82f6;
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: #fff;
-  padding-right: 32px;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
@@ -224,28 +210,4 @@ export default {
   color: #94a3b8;
   font-weight: 500;
 }
-
-.cancel-btn {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 12px;
-  padding: 2px;
-  border-radius: 2px;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-}
-
-.cancel-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
-  transform: translateY(-50%) scale(1.1);
-}
-</style> 
+</style>

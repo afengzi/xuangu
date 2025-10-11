@@ -1,0 +1,244 @@
+.filter-panel {
+  padding: 20px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.filter-panel .el-card {
+  margin-bottom: 15px;
+}
+
+.filter-panel .el-card:last-child {
+  margin-bottom: 0;
+}
+
+.filter-panel .el-form-item {
+  margin-bottom: 10px;
+}
+
+.filter-panel .el-form-item:last-child {
+  margin-bottom: 0;
+}
+
+.filter-content {
+  min-height: 200px;
+}
+
+.filter-category-row {
+  display: flex;
+  margin-bottom: 15px;
+  align-items: flex-start;
+}
+
+.filter-category-row:last-child {
+  margin-bottom: 0;
+}
+
+.category-label {
+  width: 100px;
+  padding-top: 6px;
+  font-weight: 500;
+  color: #606266;
+}
+
+.category-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.category-name.disabled {
+  color: #c0c4cc;
+}
+
+.indicator-row .category-label {
+  padding-top: 8px;
+}
+
+.indicator-icon {
+  color: #409eff;
+  font-size: 16px;
+}
+
+.indicator-badge {
+  font-weight: 500;
+  color: #409eff;
+}
+
+.category-conditions {
+  flex: 1;
+  min-width: 0;
+}
+
+.conditions-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.hot-theme-list, .indicator-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.hot-theme-tag, .indicator-btn {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  max-width: 120px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+  font-size: 13px;
+  color: #475569;
+  position: relative;
+  font-weight: 500;
+  white-space: nowrap;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hot-theme-tag:hover, .indicator-btn:hover {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+  color: #1e40af;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+}
+
+.hot-theme-tag.selected, .indicator-btn.selected {
+  border-color: #3b82f6;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.hot-theme-tag.has-value, .indicator-btn.has-value {
+  border-color: #3b82f6;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.hot-theme-tag.has-value:hover, .indicator-btn.has-value:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.hot-theme-tag .theme-name, .indicator-btn .theme-name {
+  display: inline-block;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.more-btn {
+  cursor: pointer;
+}
+
+.pending-status, .loading-status {
+  padding: 10px 0;
+  color: #909399;
+}
+
+.pending-text {
+  font-style: italic;
+}
+
+.filter-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #ebeef5;
+}
+
+.selected-summary {
+  font-size: 14px;
+  color: #606266;
+}
+
+.summary-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+/* 弹窗样式 */
+.theme-selector-popover {
+  padding: 0 !important;
+}
+
+.theme-content {
+  padding: 16px;
+}
+
+.theme-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.theme-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #303133;
+}
+
+.close-btn {
+  padding: 4px;
+  margin-right: -4px;
+}
+
+.theme-search {
+  margin-bottom: 16px;
+}
+
+.search-input {
+  width: 100%;
+}
+
+.theme-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.theme-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.theme-item:hover {
+  background-color: #f5f7fa;
+}
+
+.theme-item.selected {
+  background-color: #ecf5ff;
+  color: #409eff;
+}
+
+.theme-item .theme-name {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

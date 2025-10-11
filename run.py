@@ -1,21 +1,21 @@
 import sys
 import os
 
-# 添加项目根目录到Python路径
-current_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, current_dir)
+# 将项目根目录和backend目录添加到Python路径
+project_root = os.path.abspath(os.path.dirname(__file__))
+backend_path = os.path.join(project_root, 'backend')
+sys.path.insert(0, project_root)
+sys.path.insert(0, backend_path)
 
-# 添加backend目录到Python路径
-backend_dir = os.path.join(current_dir, 'backend')
-sys.path.insert(0, backend_dir)
-
-try:
-    from .backend.app import create_app  # type: ignore
-except ImportError as e:
-    print(f"导入失败: {e}")
-    sys.exit(1)
+from backend.app import create_app
+from backend.app.config import Config
 
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    # 使用配置文件中的主机和端口设置
+    host = getattr(Config, 'APP_HOST', '0.0.0.0')
+    port = getattr(Config, 'APP_PORT', 5001)
+    debug = getattr(Config, 'FLASK_DEBUG', True)
+    
+    app.run(debug=debug, host=host, port=port)

@@ -48,8 +48,9 @@ export const CACHE_CONFIG = {
   // 需要缓存的接口
   cacheableEndpoints: [
     '/stock/filter/categories',
-    '/stock/filter/conditions',
-    '/stock/detail'
+    '/stock/filter/conditions'
+    // 移除股票详情接口的缓存配置，避免数据不更新
+    // '/stock/detail'
   ],
   
   // 缓存键生成规则

@@ -1,0 +1,145 @@
+/* 表格容器样式 */
+.stock-table-container {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* 表格头部样式 */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.table-header .title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.table-header .actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* 分页控件样式调整 */
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 20px;
+  padding: 0 20px;
+  gap: 16px;
+}
+
+.pagination-container :deep(.el-pagination) {
+  display: flex;
+  align-items: center;
+}
+
+.pagination-container :deep(.el-pagination__sizes) {
+  margin-right: 16px;
+}
+
+.pagination-container :deep(.el-pagination__total) {
+  margin-right: 16px;
+  white-space: nowrap;
+}
+
+/* 表格单元格样式优化 */
+:deep(.el-table__header th) {
+  background-color: #f5f7fa;
+  color: #606266;
+  font-weight: 600;
+  height: 48px;
+}
+
+:deep(.el-table__row) {
+  height: 46px;
+}
+
+:deep(.el-table__cell) {
+  padding: 4px 0;
+}
+
+/* 特殊列样式 */
+.stock-code-cell {
+  color: #409eff;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.stock-code-cell:hover {
+  color: #66b1ff;
+  text-decoration: underline;
+}
+
+/* 涨跌颜色标识 */
+.up {
+  color: #f56c6c;
+}
+
+.down {
+  color: #67c23a;
+}
+
+.flat {
+  color: #909399;
+}
+
+/* 表格加载状态样式 */
+.loading-mask {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+/* 表格空状态样式 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: #909399;
+}
+
+.empty-state :deep(.el-empty__image) {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 16px;
+}
+
+.empty-state p {
+  font-size: 14px;
+  margin: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .stock-table-container {
+    padding: 12px;
+  }
+  
+  .table-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .table-header .actions {
+    justify-content: flex-end;
+  }
+  
+  .pagination-container {
+    justify-content: center;
+    padding: 0;
+  }
+}

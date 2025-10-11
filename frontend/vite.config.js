@@ -41,12 +41,16 @@ export default defineConfig({
         changeOrigin: true,
         secure: false
       },
+    },
+    // 添加静态资源服务，使共享文件可通过 /shared/ 路径访问
+    fs: {
+      allow: ['.', '../shared']
     }
   },
   resolve: {
     alias: {
       '@': resolve(process.cwd(), 'src'),
-      '@shared': resolve(process.cwd(), '../shared')
+      '@shared': resolve(process.cwd(), 'public/shared')
     }
   },
   optimizeDeps: {

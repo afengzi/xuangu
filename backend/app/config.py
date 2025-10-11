@@ -14,3 +14,10 @@ class Config:
     REDIS_SOCKET_TIMEOUT = int(os.getenv('SOCKET_TIMEOUT', 5))
     REDIS_TIMEOUT = int(os.getenv('TIMEOUT', 5))
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'your-secret-key-here')
+    
+    # 应用配置
+    APP_HOST = os.getenv('APP_HOST', '0.0.0.0')
+    APP_PORT = int(os.getenv('APP_PORT', 5000))
+    
+    # 日志配置
+    LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')

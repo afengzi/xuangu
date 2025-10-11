@@ -6,6 +6,8 @@
 import { ref, reactive, computed, onUnmounted, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getStocksByFactorsSelection, getMultiThemeAndFactorInfo, getThemesInfo, getZhibiaoInfo, getCombinedFilterInfo } from '../api/stockAPI.js'
+// 导入股票详情缓存，用于在筛选条件变化时清除
+import { useStockTable } from '../components/common/StockTable/StockTable.js'
 // 统一复用 shared 核心
 const StockFilter = (typeof window !== 'undefined' && window.StockFilterFactory) ? window.StockFilterFactory() : null
 const collectFactors = (all = {}) => {
@@ -241,6 +243,16 @@ export function useStockFilter() {
 
   // 处理筛选条件变化
   const handleFilterChange = (filterData) => {
+    // 清除股票详情缓存，确保在筛选条件变化后能获取最新的详情数据
+    try {
+      const stockTable = useStockTable();
+      if (stockTable.tooltipCache && typeof stockTable.tooltipCache.value.clear === 'function') {
+        stockTable.tooltipCache.value.clear();
+      }
+    } catch (error) {
+      console.warn('清除股票详情缓存时出错:', error);
+    }
+
     const result = processFilterChange(filterData, {
       isThemeMode: isThemeMode.value,
       themeColumns: themeColumns.value,
@@ -351,7 +363,7 @@ export function useStockFilter() {
           setCache(cacheKey, resp)
         }
       } else if (indicator) {
-        // 防御：若只有指标但仍走到这里，退回静态接口
+        // 防御：若只有指标仍走到这里，退回静态接口
         resp = await getZhibiaoInfo(indicator)
       }
 

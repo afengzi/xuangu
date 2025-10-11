@@ -64,12 +64,25 @@ export function useStockTable() {
         getDetailInfoByCode(stockCode)
       )
       
+      // 调试信息已删除
+      
       let data = null
-      if (response?.data) {
-        data = response.data
-      } else if (response) {
-        data = response
+      // 修改这里：正确处理响应数据
+      if (response && typeof response === 'object') {
+        // 直接检查响应对象中的数据字段
+        if (response.latest_theme || response.recent_fluctuation_theme) {
+          data = response
+        } else if (response.data && (response.data.latest_theme || response.data.recent_fluctuation_theme)) {
+          data = response.data
+        }
+        // 添加对响应结构的更多兼容处理
+        else if (response.data) {
+          // 如果data字段存在但没有预期的字段，直接使用data字段
+          data = response.data
+        }
       }
+      
+      // 调试信息已删除
       
       if (data) {
         // 验证数据结构，确保有必要的字段
@@ -94,10 +107,8 @@ export function useStockTable() {
         // 强制触发Vue的响应式更新
         await nextTick()
         
-        // 延迟清理加载状态，确保Vue完全更新后再清理
-        setTimeout(() => {
-          loadingStocks.value.delete(stockCode)
-        }, 100)
+        // 立即清理加载状态，确保UI及时更新
+        loadingStocks.value.delete(stockCode)
       } else {
         stockTooltips.value = {
           ...stockTooltips.value,
@@ -121,11 +132,12 @@ export function useStockTable() {
    */
   const getStockTooltipContent = (stockCode) => {
     const data = stockTooltips.value[stockCode]
-    const isLoading = loadingStocks.value.has(stockCode)
+    // 移除加载状态的判断，直接显示数据或空内容
+    // const isLoading = loadingStocks.value.has(stockCode)
     
-    if (isLoading) return '<div style="padding: 6px; font-size: 12px;">加载中...</div>'
+    // if (isLoading) return '<div style="padding: 6px; font-size: 12px;">加载中...</div>'
     if (data && data.error) return '<div style="padding: 6px; font-size: 12px;">获取信息失败</div>'
-    if (!data) return '<div style="padding: 6px; font-size: 12px;">暂无详细信息</div>'
+    if (!data) return '' // 直接返回空字符串而不是"暂无详细信息"
 
     // 简化tooltip内容，减少HTML复杂度
     const lines = []
@@ -137,6 +149,11 @@ export function useStockTable() {
     
     if (data.recent_fluctuation_theme) {
       lines.push(data.recent_fluctuation_theme)
+    }
+    
+    // 如果没有数据，返回空字符串
+    if (lines.length === 0) {
+      return ''
     }
     
     // 简化HTML结构
@@ -255,6 +272,7 @@ export function useStockTable() {
     currentSort,
     stockTooltips,
     loadingStocks,
+    tooltipCache, // 导出tooltipCache以便在其他地方使用
     
     // 方法
     handleStockNameHover,

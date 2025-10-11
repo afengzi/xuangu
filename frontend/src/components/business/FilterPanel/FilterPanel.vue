@@ -37,18 +37,15 @@
             <div v-if="categoryKey === 'hotConcept' && category.status === 'active'" class="conditions-container">
               <div class="hot-theme-list" title="热门概念">
                 <!-- 显示前10个热门题材 -->
-                <el-tag
+                <div
                   v-for="t in topThemes"
                   :key="t.name"
-                  class="hot-theme-tag"
-                  :class="{ selected: selectedThemes.includes(t.name) }"
-                  effect="plain"
-                  :type="selectedThemes.includes(t.name) ? 'primary' : 'info'"
+                  class="hot-theme-tag filter-tag"
+                  :class="{ 'selected': selectedThemes.includes(t.name), 'has-value': selectedThemes.includes(t.name) }"
                   @click="handleSelectTheme(t.name)"
                 >
                   <span class="theme-name">{{ t.name }}</span>
-                  <el-icon v-if="selectedThemes.includes(t.name)" class="cancel-btn" @click.stop="handleSelectTheme(t.name)"><Close /></el-icon>
-                </el-tag>
+                </div>
                 
                 <!-- 更多按钮 -->
                 <el-tag
@@ -70,18 +67,15 @@
               class="conditions-container"
             >
               <div class="indicator-list" title="特色指标">
-                <el-tag
+                <div
                   v-for="opt in indicatorOptions"
                   :key="opt"
-                  class="indicator-btn"
-                  :class="{ selected: selectedFilters.indicator?.special === opt }"
-                  effect="plain"
-                  :type="selectedFilters.indicator?.special === opt ? 'primary' : 'info'"
+                  class="indicator-btn filter-tag"
+                  :class="{ 'selected': selectedFilters.indicator?.special === opt, 'has-value': selectedFilters.indicator?.special === opt }"
                   @click="handleSelectIndicator(opt)"
                 >
                   <span>{{ opt }}</span>
-                  <el-icon v-if="selectedFilters.indicator?.special === opt" class="cancel-btn" @click.stop="clearIndicator"><Close /></el-icon>
-                </el-tag>
+                </div>
               </div>
             </div>
 
@@ -200,7 +194,7 @@ import { ref, reactive, computed, onMounted, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import FilterItem from './FilterItem.vue'
 // 1) 使用静态常量
-import { FILTER_CATEGORIES, ALL_FILTERS } from '../../../utils/constants.js'
+import { FILTER_CATEGORIES, ALL_FILTERS } from '@shared/config/constants.js'
 import { get } from '../../../api/index.js'
 import { getAllThemes, getThemesInfo } from '../../../api/stockAPI.js'
 import { getThemesData } from '../../../utils/themesCache.js'
@@ -467,13 +461,7 @@ const indicatorOptions = computed(() => {
       }
     }
 
-    const clearIndicator = () => {
-      if (selectedFilters.indicator) {
-        delete selectedFilters.indicator.special
-        if (Object.keys(selectedFilters.indicator).length === 0) delete selectedFilters.indicator
-        emit('filter-change', { category: 'indicator', condition: 'special', value: '', allFilters: { ...selectedFilters } })
-      }
-    }
+
 
 
     onMounted(async () => {
@@ -506,7 +494,6 @@ const indicatorOptions = computed(() => {
       // indicator
       indicatorOptions,
       handleSelectIndicator,
-      clearIndicator,
       // hot concepts
       allThemes,
       topThemes,
@@ -531,462 +518,5 @@ const indicatorOptions = computed(() => {
 </script>
 
 <style scoped>
-.filter-panel {
-  width: 100%;
-}
-
-/* ===== 指标专区 - 独特样式 ===== */
-.indicator-row {
-  position: relative;
-  border-bottom: 1px solid #e0e7ff;
-  background: linear-gradient(135deg, rgba(59,130,246,0.06) 0%, rgba(99,102,241,0.06) 100%);
-  box-shadow: inset 0 0 0 1px rgba(99,102,241,0.15);
-  transition: all 0.3s ease;
-}
-
-.indicator-row::before {
-  /* 左侧高亮条 */
-  content: '';
-  position: absolute;
-  left: -20px;
-  top: 0;
-  bottom: 0;
-  width: 6px;
-  border-radius: 0 6px 6px 0;
-  background: linear-gradient(180deg, #60a5fa, #8b5cf6);
-  box-shadow: 0 0 12px rgba(99,102,241,0.4);
-}
-
-.indicator-row:hover {
-  background: linear-gradient(135deg, rgba(59,130,246,0.10) 0%, rgba(99,102,241,0.10) 100%);
-  box-shadow: inset 0 0 0 1px rgba(99,102,241,0.25);
-}
-
-.indicator-icon {
-  color: #4f46e5;
-  margin-right: 6px;
-  font-size: 24px;
-}
-
-.indicator-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  color: #fff;
-  font-weight: 700;
-  font-size: 18px;
-  letter-spacing: 0.5px;
-  box-shadow: 0 6px 18px rgba(99,102,241,0.38);
-}
-
-.indicator-sub {
-  margin-left: 6px;
-  color: #4338ca;
-  font-weight: 600;
-}
-
-/* 仅放大“特色指标”行的分类名字号 */
-.indicator-row .category-name {
-  font-size: 20px;
-  line-height: 1.8;
-}
-
-/* 指标专区的“待开发”提示更显眼 */
-.indicator-row .pending-status .pending-text {
-  color: #4f46e5;
-  font-weight: 600;
-  background: rgba(99,102,241,0.08);
-  border: 1px dashed rgba(99,102,241,0.35);
-  padding: 4px 8px;
-  border-radius: 6px;
-}
-
-/* 轻微高光扫光效果（可选） */
-.indicator-row {
-  overflow: hidden;
-}
-.indicator-row::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -40%;
-  width: 40%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-  transform: skewX(-20deg);
-  animation: shine 4s ease-in-out infinite;
-}
-@keyframes shine {
-  0%   { left: -40%; }
-  60%  { left: 120%; }
-  100% { left: 120%; }
-}
-
-.filter-card {
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0;
-}
-
-.title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.filter-content {
-  padding: 0;
-}
-
-.filter-category-row {
-  display: flex;
-  align-items: flex-start;
-  min-height: 50px;
-  padding: 14px 0;
-  border-bottom: 1px solid #f1f5f9;
-  transition: all 0.3s ease;
-}
-
-.filter-category-row:hover {
-  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-}
-
-.filter-category-row:last-child {
-  border-bottom: none;
-}
-
-.category-label {
-  flex: 0 0 110px;
-  padding-right: 18px;
-  display: flex;
-  align-items: center;
-  min-height: 40px;
-  justify-content: flex-end;
-  text-align: right;
-}
-
-.category-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1e293b;
-  line-height: 1.5;
-  white-space: nowrap;
-}
-
-.category-name.disabled {
-  color: #94a3b8;
-}
-
-.category-conditions {
-  flex: 1;
-  min-height: 40px;
-  display: flex;
-  align-items: flex-start;
-  padding-top: 2px;
-}
-
-.conditions-container {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 8px 6px;
-  align-items: center;
-  width: 100%;
-}
-
-.pending-status,
-.loading-status {
-  display: flex;
-  align-items: center;
-  min-height: 40px;
-  padding: 8px 12px;
-  width: 100%;
-}
-
-.pending-text {
-  font-size: 14px;
-  color: #94a3b8;
-  font-style: italic;
-  font-weight: 500;
-}
-
-.filter-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 0 0 0;
-  border-top: 1px solid #f1f5f9;
-  margin-top: 12px;
-  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-  border-radius: 0 0 12px 12px;
-  margin: 12px -20px 0 -20px;
-  padding: 12px 20px;
-}
-
-.selected-summary {
-  flex: 1;
-}
-
-.summary-text {
-  font-size: 14px;
-  color: #475569;
-  font-weight: 500;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 12px;
-}
-
-/* 热门概念标签样式，保持与其他条件一致的观感 */
-.hot-theme-list { 
-  display: flex; 
-  flex-wrap: wrap; 
-  gap: 8px 6px; 
-}
-
-.hot-theme-tag {
-  height: 32px;
-  line-height: 30px;
-  padding: 0 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(5px);
-  font-size: 13px;
-  color: #475569;
-  font-weight: 500;
-  box-sizing: border-box;
-  cursor: default;
-  display: inline-flex;
-  flex: 0 0 auto; /* 禁止收缩换行 */
-  white-space: nowrap; /* 标签内容不换行 */
-  align-items: center;
-  gap: 4px;
-}
-
-.hot-theme-tag:hover {
-  border-color: #3b82f6;
-  background: rgba(59, 130, 246, 0.05);
-  color: #1e40af;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
-}
-
-.hot-theme-tag.selected {
-  border-color: #3b82f6;
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.hot-theme-tag.more-btn {
-  border-color: #f59e0b;
-  background: rgba(245, 158, 11, 0.1);
-  color: #d97706;
-  font-weight: 600;
-}
-
-.hot-theme-tag.more-btn:hover {
-  border-color: #f59e0b;
-  background: rgba(245, 158, 11, 0.2);
-  color: #b45309;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
-}
-
-
-/* 特色指标按钮样式（与热门概念标签一致，色系略偏紫） */
-.indicator-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 10px;
-}
-
-.indicator-btn {
-  height: 42px;
-  line-height: 40px;
-  padding: 0 16px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  background: linear-gradient(#ffffffcc, #ffffffcc) padding-box,
-              linear-gradient(135deg, #a78bfa, #60a5fa) border-box;
-  backdrop-filter: blur(5px);
-  font-size: 16px;
-  color: #475569;
-  font-weight: 500;
-  box-sizing: border-box;
-  display: inline-flex;
-  flex: 0 0 auto;
-  white-space: nowrap;
-  align-items: center;
-  gap: 6px;
-  box-shadow: 0 2px 10px rgba(79, 70, 229, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
-}
-
-.indicator-btn:hover {
-  color: #4f46e5;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.18);
-}
-
-.indicator-btn.selected {
-  border-color: transparent;
-  background: linear-gradient(#ffffff00, #ffffff00) padding-box,
-              linear-gradient(135deg, #7c3aed 0%, #4f46e5 50%, #3b82f6 100%) border-box;
-  color: #fff;
-  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.35), inset 0 0 0 999px rgba(79, 70, 229, 0.10);
-  animation: gradientShift 4s ease infinite;
-}
-
-@keyframes gradientShift {
-  0% { filter: saturate(100%); }
-  50% { filter: saturate(120%); }
-  100% { filter: saturate(100%); }
-}
-
-
-.cancel-btn {
-  margin-left: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-}
-
-/* 题材选择器弹窗样式 - 与DataRangeSelector保持一致 */
-.theme-content {
-  padding: 0;
-}
-
-.theme-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid #e2e8f0;
-  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-}
-
-.theme-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.close-btn {
-  padding: 0;
-  font-size: 14px;
-  color: #64748b;
-  transition: all 0.3s ease;
-}
-
-.close-btn:hover {
-  color: #3b82f6;
-  transform: scale(1.1);
-}
-
-.theme-search {
-  padding: 12px 16px;
-  border-bottom: 1px solid #e2e8f0;
-  background: rgba(255, 255, 255, 0.95);
-}
-
-.search-input {
-  width: 100%;
-}
-
-.search-input :deep(.el-input__inner) {
-  border-radius: 6px;
-  font-size: 13px;
-}
-
-.theme-list {
-  max-height: 240px;
-  overflow-y: auto;
-  padding: 8px 0;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(5px);
-}
-
-.theme-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.theme-list::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 3px;
-}
-
-.theme-list::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
-}
-
-.theme-list::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-.theme-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 16px;
-  font-size: 14px;
-  color: #475569;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 500;
-}
-
-.theme-item:hover {
-  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-  color: #1e40af;
-  transform: translateX(2px);
-}
-
-.theme-item.selected {
-  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-  color: #1d4ed8;
-  font-weight: 600;
-  border-left: 3px solid #3b82f6;
-  padding-left: 13px;
-}
-
-.theme-name {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-
+@import './styles/index.css';
 </style>
-
-<style>
-/* 题材选择器弹窗全局样式 - 与DataRangeSelector保持一致 */
-.theme-selector-popover {
-  padding: 0 !important;
-  min-width: 360px !important;
-  max-width: 400px !important;
-  margin-top: 8px !important;
-  border-radius: 12px !important;
-  border: 1px solid #e2e8f0 !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
-  backdrop-filter: blur(10px) !important;
-  z-index: 3000 !important;
-}
-
-.theme-selector-popover .el-popover__arrow {
-  display: none !important;
-}
-</style> 

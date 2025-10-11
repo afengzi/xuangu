@@ -56,6 +56,9 @@ frontend/.env.*
 # ---- Cache / Temp ----
 .tmp/
 .temp/
+
+# ---- Python Environment ----
+.conda/
 # ---- OS / Editor ----
 .DS_Store
 Thumbs.db
