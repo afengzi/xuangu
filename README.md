@@ -162,6 +162,26 @@ docker-compose up -d
 - Redis数据库服务（端口6379）
 - 主应用服务（端口5000）
 
+### 数据更新
+
+#### 一次性数据更新测试
+```bash
+python backend/test_daily_update.py
+```
+
+#### 启动每日定时数据更新服务
+```bash
+# 方法1：使用backend目录下的脚本
+python backend/run_daily_update.py
+
+# 方法2：使用项目根目录的main.py
+python main.py scheduler
+```
+
+定时任务会在每天08:30自动执行数据更新，包括：
+1. 更新题材数据
+2. 更新技术面、资金面、基本面因子及指标
+
 ## 使用说明
 
 ### 基本使用流程

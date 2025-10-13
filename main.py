@@ -55,6 +55,17 @@ def run_web_server():
         import traceback
         traceback.print_exc()
 
+def run_daily_scheduler():
+    """启动每日定时更新服务"""
+    try:
+        from backend.app.models.daily_updater import main as daily_main
+        print("启动每日定时更新服务...")
+        daily_main()
+    except Exception as e:
+        print(f"启动每日定时更新服务失败: {e}")
+        import traceback
+        traceback.print_exc()
+
 def show_help():
     """显示帮助信息"""
     print("""
@@ -65,13 +76,15 @@ def show_help():
     daily      - 运行每日数据更新任务
     theme      - 运行题材数据更新任务
     server     - 启动Web服务器
+    scheduler  - 启动每日定时更新服务
     help       - 显示此帮助信息
 
 示例:
-    python main.py daily    # 运行每日数据更新
-    python main.py theme    # 运行题材数据更新
-    python main.py server   # 启动Web服务器
-    python main.py help     # 显示帮助信息
+    python main.py daily     # 运行每日数据更新
+    python main.py theme     # 运行题材数据更新
+    python main.py server    # 启动Web服务器
+    python main.py scheduler # 启动每日定时更新服务
+    python main.py help      # 显示帮助信息
     """)
 
 if __name__ == "__main__":
@@ -88,6 +101,8 @@ if __name__ == "__main__":
         run_theme_update()
     elif command == "server":
         run_web_server()
+    elif command == "scheduler":
+        run_daily_scheduler()
     elif command == "help":
         show_help()
     else:

@@ -388,11 +388,11 @@ def delete_redis():
     r.delete('zhibiao:*')
     r.close()
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     # main()
     # df = pywencai.get(query='涨幅大于7.5 市值大于150亿  多头排列', sort_key='涨幅大于7.5 市值大于150亿  多头排列', sort_order='asc')
     # for _, row in safe_iterate_data(df, '涨幅大于7.5 市值大于150亿  多头排列'):
     #     print(row)
-    zhibiao2factor()
+    # zhibiao2factor()
     # df = pywencai.get(query='市净率', sort_key='市净率', sort_order='asc')
     # print(df['市净率(pb)[20250915]'])
