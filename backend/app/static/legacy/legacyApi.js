@@ -20,7 +20,8 @@
         'X-Requested-With': 'XMLHttpRequest'
       };
       try {
-        var token = localStorage.getItem('token');
+        // 统一使用admin_token键名
+        var token = localStorage.getItem('admin_token');
         if (token) headers['Authorization'] = 'Bearer ' + token;
       } catch (e) {}
       return headers;

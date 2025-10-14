@@ -7,13 +7,16 @@ load_dotenv(os.path.join(PROJECT_ROOT, '.env'))
 
 class Config:
     # 优先使用 REDIS_HOST/REDIS_PORT 等，更直观；兼容旧的 LOCALHOST/PORT 等
-    REDIS_LOCALHOST = os.getenv('LOCALHOST', '')
+    REDIS_LOCALHOST = os.getenv('LOCALHOST', '127.0.0.1')
     REDIS_PORT = int(os.getenv('PORT', 6379))
     REDIS_PASSWORD = os.getenv('PASSWORD', None)
     REDIS_DB = int(os.getenv('DB', 1))
     REDIS_SOCKET_TIMEOUT = int(os.getenv('SOCKET_TIMEOUT', 5))
     REDIS_TIMEOUT = int(os.getenv('TIMEOUT', 5))
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'your-secret-key-here')
+    
+    # 权限管理Redis配置（与主配置保持一致，避免数据库不匹配）
+    REDIS_AUTH_DB = int(os.getenv('DB', 1))
     
     # 应用配置
     APP_HOST = os.getenv('APP_HOST', '0.0.0.0')

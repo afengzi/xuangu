@@ -238,17 +238,17 @@ class ApiService {
   }
 
   /**
-   * 获取token
+   * 获取token - 统一使用auth.js中定义的键名
    */
-  getToken() {
-    return localStorage.getItem('token')
-  }
+
 
   /**
-   * 跳转到登录页
+   * 跳转到登录页 - 统一清除auth信息
    */
   redirectToLogin() {
-    localStorage.removeItem('token')
+    localStorage.removeItem('admin_token')
+    localStorage.removeItem('userRole')
+    localStorage.removeItem('isLoggedIn')
     window.location.href = '/login'
   }
 

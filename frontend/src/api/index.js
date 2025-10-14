@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import { getToken, clearAuthInfo } from '@/utils/auth.js'
 
 // 创建axios实例
 const service = axios.create({
@@ -16,7 +17,7 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     // 添加token认证
-    const token = localStorage.getItem('token')
+    const token = getToken()
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -34,11 +35,20 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => {
     const { data, config } = response
+    
     // 处理业务状态码
-    if (data.code && data.code !== 200) {
-      ElMessage.error(data.message || '请求失败')
-      return Promise.reject(new Error(data.message || '请求失败'))
+    if (data.code !== undefined) {
+      if (data.code === 200) {
+        // 如果返回的数据格式包含data字段，直接返回该字段
+        // 否则返回整个响应体，以兼容不同的后端响应格式
+        return data.data !== undefined ? data.data : data
+      } else {
+        ElMessage.error(data.message || '请求失败')
+        return Promise.reject(new Error(data.message || '请求失败'))
+      }
     }
+    
+    // 处理没有code字段的响应（如部分后端API）
     return data
   },
   error => {
@@ -50,11 +60,17 @@ service.interceptors.response.use(
         case 401:
           ElMessage.error('未授权，请重新登录')
           // 清除token并跳转到登录页
-          localStorage.removeItem('token')
-          window.location.href = '/login'
+          clearAuthInfo()
+          // 根据当前路径决定跳转到哪个登录页面
+          const currentPath = window.location.pathname
+          if (currentPath.startsWith('/admin/')) {
+            window.location.href = '/admin/login'
+          } else {
+            window.location.href = '/login'
+          }
           break
         case 403:
-          ElMessage.error('禁止访问')
+          ElMessage.error('权限不足，无法访问')
           break
         case 404:
           ElMessage.error('请求的资源不存在')
@@ -63,12 +79,20 @@ service.interceptors.response.use(
           ElMessage.error('服务器内部错误')
           break
         default:
-          ElMessage.error(data?.message || `请求失败 (${status})`)
+          ElMessage.error(data.message || '请求失败')
       }
     } else if (error.request) {
-      ElMessage.error('网络连接失败，请检查网络设置')
+      // 请求已发送但没有收到响应
+      ElMessage.error('网络错误，请检查网络连接')
     } else {
+      // 请求配置出错
       ElMessage.error('请求配置错误')
+    }
+    
+    // 记录请求耗时
+    if (error.config && error.config.metadata) {
+      const duration = Date.now() - error.config.metadata.startTime
+      console.warn(`[API Error] ${error.config.method?.toUpperCase()} ${error.config.url} (${duration}ms)`, error)
     }
     
     return Promise.reject(error)
@@ -176,4 +200,4 @@ export const download = (url, params = {}, filename = '') => {
   })
 }
 
-export default service 
+export default service
