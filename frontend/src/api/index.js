@@ -58,7 +58,9 @@ service.interceptors.response.use(
       
       switch (status) {
         case 401:
-          ElMessage.error('未授权，请重新登录')
+          // 显示后端返回的具体错误信息，比如"账号已被禁用"、"用户不存在"等
+          const unauthorizedMessage = error.response?.data?.error || error.response?.data?.message || '未授权，请重新登录'
+          ElMessage.error(unauthorizedMessage)
           // 清除token并跳转到登录页
           clearAuthInfo()
           // 根据当前路径决定跳转到哪个登录页面
@@ -70,7 +72,9 @@ service.interceptors.response.use(
           }
           break
         case 403:
-          ElMessage.error('权限不足，无法访问')
+          // 显示后端返回的具体错误信息，比如"没有权限"
+          const forbiddenMessage = error.response?.data?.error || error.response?.data?.message || '权限不足，无法访问'
+          ElMessage.error(forbiddenMessage)
           break
         case 404:
           ElMessage.error('请求的资源不存在')

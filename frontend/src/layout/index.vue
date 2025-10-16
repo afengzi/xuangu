@@ -3,7 +3,9 @@
     <!-- 简单的管理后台布局 -->
     <header class="layout-header">
       <div class="header-content">
+        <div class="header-left">
         <h1>选股助手 - 管理后台</h1>
+        </div>
         <div class="header-right">
           <el-dropdown>
             <span class="user-name">管理员</span>
@@ -63,15 +65,23 @@ export default {
   justify-content: space-between;
 }
 
-.header-content h1 {
+.header-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.header-left h1 {
   font-size: 18px;
   margin: 0;
   font-weight: 500;
+  font-family: inherit;
 }
 
 .header-right {
   display: flex;
   align-items: center;
+  margin-left: auto;
 }
 
 .user-name {
@@ -79,6 +89,10 @@ export default {
   padding: 8px 16px;
   border-radius: 4px;
   transition: background-color 0.3s;
+  font-size: 18px;
+  font-weight: 500;
+  font-family: inherit;
+  color: white;
 }
 
 .user-name:hover {

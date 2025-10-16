@@ -51,10 +51,6 @@
           </el-button>
         </el-form-item>
       </el-form>
-      
-      <div class="login-footer">
-        <p>演示账号：admin / 123456</p>
-      </div>
     </div>
   </div>
 </template>
@@ -107,6 +103,23 @@ export default {
           localStorage.setItem('token', response.data.token)
           localStorage.setItem('isLoggedIn', 'true')
           localStorage.setItem('username', loginForm.username)
+          localStorage.setItem('loginTime', new Date().toISOString())
+          // 存储用户角色信息
+          if (response.data.user && response.data.user.roles) {
+            localStorage.setItem('userRoles', JSON.stringify(response.data.user.roles))
+          }
+          // 存储角色详细信息
+          if (response.data.user && response.data.user.role_details) {
+            localStorage.setItem('userRoleDetails', JSON.stringify(response.data.user.role_details))
+          }
+          // 存储用户邮箱
+          if (response.data.user && response.data.user.email) {
+            localStorage.setItem('userEmail', response.data.user.email)
+            // 触发自定义事件通知邮箱更新
+            window.dispatchEvent(new CustomEvent('localStorageChanged', {
+              detail: { key: 'userEmail', value: response.data.user.email }
+            }))
+          }
           ElMessage.success('登录成功！')
           router.push('/stock-filter')
         } else {
@@ -116,7 +129,11 @@ export default {
       } catch (error) {
         console.error('登录错误:', error)
         if (error.response?.status === 401) {
-          ElMessage.error('用户名或密码错误')
+          // 显示后端返回的具体错误信息
+          const errorMessage = error.response?.data?.error || '用户名或密码错误'
+          ElMessage.error(errorMessage)
+        } else if (error.response?.status === 403) {
+          ElMessage.error('没有权限登录系统')
         } else {
           ElMessage.error('登录失败，请重试')
         }
@@ -203,23 +220,6 @@ export default {
   box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
 
-.login-footer {
-  text-align: center;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #e2e8f0;
-}
-
-.login-footer p {
-  color: #64748b;
-  font-size: 12px;
-  margin: 0;
-  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-weight: 500;
-}
-
 /* 响应式设计 */
 @media (max-width: 480px) {
   .login-container {
@@ -234,4 +234,4 @@ export default {
     font-size: 24px;
   }
 }
-</style> 
+</style>

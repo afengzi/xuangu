@@ -6,7 +6,7 @@
         type="primary"
         @click="$router.push('/admin/dashboard')"
       >
-        返回Dashboard
+        返回仪表盘
       </el-button>
       
       <el-button

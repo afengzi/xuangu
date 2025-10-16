@@ -111,6 +111,10 @@ def admin_login():
     roles = auth_manager.get_user_roles(int(user['id']))
     permissions = auth_manager.get_user_permissions(int(user['id']))
     
+    # 更新最后登录时间
+    from datetime import datetime
+    auth_manager.update_user(int(user['id']), last_login=datetime.now().isoformat())
+    
     return jsonify({
         'code': 200,
         'data': {
@@ -231,6 +235,7 @@ def create_user():
     username = data.get('username')
     password = data.get('password')
     email = data.get('email', '')
+    role_ids = data.get('role_ids', [])  # 获取角色ID列表
     
     if not username or not password:
         return jsonify({'error': '用户名和密码不能为空'}), 400
@@ -241,13 +246,25 @@ def create_user():
     
     try:
         user = auth_manager.create_user(username, password, email)
+        
+        # 分配角色
+        if role_ids:
+            for role_id in role_ids:
+                if auth_manager.get_role_by_id(role_id):
+                    auth_manager.assign_role_to_user(int(user['id']), role_id)
+        
+        # 获取用户角色信息用于返回
+        roles = auth_manager.get_user_roles(int(user['id']))
+        
         return jsonify({
+            'code': 200,
             'message': '用户创建成功',
-            'user': {
+            'data': {
                 'id': user['id'],
                 'username': user['username'],
                 'email': user['email'],
-                'status': user['status']
+                'status': user['status'],
+                'roles': roles
             }
         })
     except Exception as e:
@@ -285,14 +302,45 @@ def update_user(user_id):
     if 'username' in data:
         update_data['username'] = data['username']
     
-    if not update_data:
+    if not update_data and 'role_ids' not in data:
         return jsonify({'error': '没有提供要更新的字段'}), 400
     
-    success = auth_manager.update_user(user_id, **update_data)
-    if success:
-        return jsonify({'message': '用户更新成功'})
-    else:
-        return jsonify({'error': '用户不存在或更新失败'}), 404
+    # 更新用户基本信息
+    success = True
+    if update_data:
+        success = auth_manager.update_user(user_id, **update_data)
+        if not success:
+            return jsonify({'error': '用户不存在或更新失败'}), 404
+    
+    # 更新角色信息
+    if 'role_ids' in data:
+        role_ids = data['role_ids']
+        
+        # 先清除现有角色
+        existing_roles = auth_manager.get_user_roles(user_id)
+        for role in existing_roles:
+            auth_manager.remove_role_from_user(user_id, int(role['id']))
+        
+        # 分配新角色
+        for role_id in role_ids:
+            if auth_manager.get_role_by_id(role_id):
+                auth_manager.assign_role_to_user(user_id, role_id)
+    
+    # 获取更新后的用户信息和角色
+    updated_user = auth_manager.get_user_by_id(user_id)
+    updated_roles = auth_manager.get_user_roles(user_id)
+    
+    return jsonify({
+        'code': 200,
+        'message': '用户更新成功',
+        'data': {
+            'id': updated_user['id'],
+            'username': updated_user['username'],
+            'email': updated_user['email'],
+            'status': updated_user['status'],
+            'roles': updated_roles
+        }
+    })
 
 @admin_bp.route('/users/<int:user_id>', methods=['DELETE'])
 @login_required

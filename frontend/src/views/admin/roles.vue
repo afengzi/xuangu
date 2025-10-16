@@ -2,7 +2,7 @@
   <div class="roles-container">
     <div class="filter-container">
       <el-button
-        class="filter-item"
+        class="filter-item"   
         type="primary"
         @click="goToDashboard"
         :icon="House"
@@ -431,8 +431,15 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          createRole(this.temp).then(() => {
-            this.list.unshift(this.temp)
+          createRole(this.temp).then((response) => {
+            // 使用后端返回的数据，确保包含创建时间等字段
+            const newRole = response.data || response.role || response
+            if (newRole && newRole.id) {
+              this.list.unshift(newRole)
+            } else {
+              // 如果后端没有返回完整数据，重新获取列表
+              this.getList()
+            }
             this.dialogFormVisible = false
             this.$notify({
               title: '成功',
@@ -440,6 +447,9 @@ export default {
               type: 'success',
               duration: 2000
             })
+          }).catch((error) => {
+            console.error('创建角色失败:', error)
+            this.$message.error('创建角色失败: ' + (error.message || '未知错误'))
           })
         }
       })
@@ -533,23 +543,34 @@ export default {
         type: 'warning'
       }).then(async () => {
         try {
-          await deleteRole(row.id)
-          this.list.splice(index, 1)
-          this.$notify({
-            title: '成功',
-            message: `角色「${row.name}」删除成功`,
-            type: 'success',
-            duration: 2000
-          })
+          console.log(`开始删除角色: ID=${row.id}, 名称=${row.name}`)
+          const response = await deleteRole(row.id)
+          console.log('删除角色响应:', response)
+          
+          // 验证删除是否成功
+          if (response && (response.data || response.message || response.code === 200)) {
+            this.list.splice(index, 1)
+            this.$notify({
+              title: '成功',
+              message: `角色「${row.name}」删除成功`,
+              type: 'success',
+              duration: 2000
+            })
+          } else {
+            throw new Error('删除角色失败：无效的响应数据')
+          }
         } catch (error) {
           console.error('删除角色失败:', error)
-          this.$message.error('删除角色失败: ' + (error.message || '未知错误'))
+          const errorMsg = error.response?.data?.message || error.message || '删除角色失败'
+          this.$message.error(errorMsg)
         }
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
+      }).catch((action) => {
+        if (action === 'cancel') {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        }
       })
     }
   }

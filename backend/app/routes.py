@@ -19,16 +19,82 @@ def health_check():
 # 登录
 @main.route('/login', methods=['POST'])
 def login():
-    # 从请求体获取数据，而不是从URL参数
+    """用户登录验证"""
+    from .models.auth import auth_manager
+    
+    # 从请求体获取数据
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
     
-    if username == 'admin' and password == '123456':
-        token = generate_token(username)
-        return jsonify({'token': token})
-    else:
-        return jsonify({'error': 'Invalid username or password'}), 401
+    if not username or not password:
+        return jsonify({'error': '用户名和密码不能为空'}), 400
+    
+    # 验证用户密码
+    if not auth_manager.verify_user_password(username, password):
+        return jsonify({'error': '用户名或密码错误'}), 401
+    
+    # 获取用户信息
+    user = auth_manager.get_user_by_username(username)
+    if not user:
+        print(f"用户 {username} 不存在")
+        return jsonify({'error': '用户不存在'}), 401
+    
+    print(f"找到用户: {username}, ID: {user['id']}, 状态: {user.get('status')}")
+    
+    # 验证用户账号状态是否被禁用
+    user_status = user.get('status')
+    print(f"用户 {username} 状态: {user_status}")
+    
+    # 状态为0或'0'表示禁用，其他值表示启用
+    if user_status == 0 or user_status == '0':
+        return jsonify({'error': '账号已被禁用'}), 401
+    
+    # 验证用户是否具备登录权限 (stock:filter)
+    try:
+        user_permissions = auth_manager.get_user_permissions(int(user['id']))
+        print(f"用户 {username} 的权限列表: {[p.get('code') for p in user_permissions if p.get('code')]}")
+        
+        # 检查多种可能的权限代码格式
+        permission_codes = [p.get('code') for p in user_permissions if p.get('code')]
+        has_login_permission = (
+            'stock:filter' in permission_codes or
+            'stock:fliter' in permission_codes or  # 处理可能的拼写错误
+            'filter' in permission_codes
+        )
+        
+        if not has_login_permission:
+            print(f"用户 {username} 没有stock:filter权限，拒绝登录")
+            return jsonify({'error': '没有权限'}), 403
+        else:
+            print(f"用户 {username} 权限验证通过")
+            
+    except Exception as e:
+        print(f"验证用户权限时出错: {str(e)}")
+        return jsonify({'error': '权限验证失败'}), 500
+    
+    # 创建会话
+    token = auth_manager.create_session(int(user['id']))
+    
+    # 获取用户权限信息
+    roles = auth_manager.get_user_roles(int(user['id']))
+    permissions = auth_manager.get_user_permissions(int(user['id']))
+    
+    # 更新最后登录时间
+    from datetime import datetime
+    auth_manager.update_user(int(user['id']), last_login=datetime.now().isoformat())
+    
+    return jsonify({
+        'token': token,
+        'user': {
+            'id': user['id'],
+            'username': user['username'],
+            'email': user.get('email', ''),
+            'roles': [r['name'] for r in roles],
+            'role_details': [{"name": r['name'], "description": r.get('description', '')} for r in roles],
+            'permissions': [p['code'] for p in permissions]
+        }
+    })
 
 
 # 因子筛选

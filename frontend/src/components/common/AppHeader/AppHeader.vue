@@ -13,7 +13,11 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="logout">
+              <el-dropdown-item command="profile">
+                <el-icon><User /></el-icon>
+                个人信息
+              </el-dropdown-item>
+              <el-dropdown-item command="logout" divided>
                 <el-icon><SwitchButton /></el-icon>
                 退出登录
               </el-dropdown-item>
@@ -38,7 +42,7 @@ export default {
     ArrowDown,
     SwitchButton
   },
-  emits: ['logout'],
+  emits: ['logout', 'show-profile'],
   setup(props, { emit }) {
     const router = useRouter()
     
@@ -47,7 +51,10 @@ export default {
     
     // 处理下拉菜单命令
     const handleCommand = async (command) => {
-      if (command === 'logout') {
+      if (command === 'profile') {
+        // 显示个人信息面板
+        emit('show-profile')
+      } else if (command === 'logout') {
         try {
           await ElMessageBox.confirm('确定要退出登录吗？', '提示', {
             confirmButtonText: '确定',

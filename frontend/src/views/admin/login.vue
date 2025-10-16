@@ -224,6 +224,38 @@ export default {
             if (error.response) {
               console.error('错误响应状态:', error.response.status)
               console.error('错误响应数据:', error.response.data)
+              
+              if (error.response.status === 403) {
+                this.$notify({
+                  title: '权限不足',
+                  message: '您没有权限登录管理后台',
+                  type: 'error',
+                  duration: 3000
+                })
+              } else if (error.response.status === 401) {
+                // 显示后端返回的具体错误信息
+                const errorMessage = error.response?.data?.error || '用户名或密码错误'
+                this.$notify({
+                  title: '登录失败',
+                  message: errorMessage,
+                  type: 'error',
+                  duration: 3000
+                })
+              } else {
+                this.$notify({
+                  title: '登录失败',
+                  message: '登录失败，请重试',
+                  type: 'error',
+                  duration: 3000
+                })
+              }
+            } else {
+              this.$notify({
+                title: '登录失败',
+                message: '网络错误，请检查连接',
+                type: 'error',
+                duration: 3000
+              })
             }
             this.loading = false
           }).finally(() => {

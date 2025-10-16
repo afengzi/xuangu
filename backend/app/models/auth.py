@@ -191,28 +191,32 @@ class RedisAuthManager:
             if not self.redis_client:
                 raise redis.RedisError("Redis未连接")
                 
-            # 获取所有用户ID
+            # 获取所有用户ID，但只计算有效的用户键
             user_keys = self.redis_client.keys("user:[0-9]*")
-            total = len(user_keys)
+            valid_user_keys = []
+            
+            # 先过滤出有效的用户键
+            for user_key in user_keys:
+                key_str = user_key.decode('utf-8') if isinstance(user_key, bytes) else user_key
+                import re
+                if re.match(r'^user:\d+$', key_str):
+                    valid_user_keys.append(user_key)
+            
+            total = len(valid_user_keys)
             
             # 分页
             start = (page - 1) * page_size
             end = start + page_size
             
             users = []
-            for user_key in sorted(user_keys)[start:end]:
-                # 确保只处理格式为"user:数字"的哈希键
-                # 避免处理类似"user:id:counter"这样的非哈希键
-                key_str = user_key.decode('utf-8') if isinstance(user_key, bytes) else user_key
-                import re
-                if re.match(r'^user:\d+$', key_str):
-                    try:
-                        user_data = self.redis_client.hgetall(user_key)
-                        if user_data:
-                            user_data.pop('password_hash', None)  # 不返回密码
-                            users.append(user_data)
-                    except redis.RedisError as e:
-                        print(f"获取用户数据失败 {user_key}: {str(e)}")
+            for user_key in sorted(valid_user_keys)[start:end]:
+                try:
+                    user_data = self.redis_client.hgetall(user_key)
+                    if user_data:
+                        user_data.pop('password_hash', None)  # 不返回密码
+                        users.append(user_data)
+                except redis.RedisError as e:
+                    print(f"获取用户数据失败 {user_key}: {str(e)}")
             
             return {
                 'total': total,

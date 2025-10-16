@@ -148,11 +148,15 @@ class ApiService {
     
     switch (status) {
       case 401:
-        ElMessage.error('未授权，请重新登录')
+        // 显示后端返回的具体错误信息，比如"账号已被禁用"、"用户不存在"等
+        const unauthorizedMessage = data?.error || data?.message || '未授权，请重新登录'
+        ElMessage.error(unauthorizedMessage)
         this.redirectToLogin()
         break
       case 403:
-        ElMessage.error('禁止访问')
+        // 显示后端返回的具体错误信息，比如"没有权限"
+        const forbiddenMessage = data?.error || data?.message || '禁止访问'
+        ElMessage.error(forbiddenMessage)
         break
       case 404:
         ElMessage.error('请求的资源不存在')
