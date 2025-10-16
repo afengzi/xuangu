@@ -81,16 +81,28 @@ def admin_login():
     password = data.get('password')
     
     if not username or not password:
-        return jsonify({'error': '用户名和密码不能为空'}), 400
+        return jsonify({
+            'code': 400,
+            'message': '用户名和密码不能为空',
+            'data': {}
+        }), 400
     
     # 验证用户密码
     if not auth_manager.verify_user_password(username, password):
-        return jsonify({'error': '用户名或密码错误'}), 401
+        return jsonify({
+            'code': 401,
+            'message': '用户名或密码错误',
+            'data': {}
+        }), 401
     
     # 获取用户信息
     user = auth_manager.get_user_by_username(username)
     if not user or user.get('status') != '1':
-        return jsonify({'error': '用户不存在或已被禁用'}), 401
+        return jsonify({
+            'code': 401,
+            'message': '用户不存在或已被禁用',
+            'data': {}
+        }), 401
     
     # 创建会话
     token = auth_manager.create_session(int(user['id']))
@@ -100,13 +112,16 @@ def admin_login():
     permissions = auth_manager.get_user_permissions(int(user['id']))
     
     return jsonify({
-        'token': token,
-        'user': {
-            'id': user['id'],
-            'username': user['username'],
-            'email': user.get('email', ''),
-            'roles': [r['name'] for r in roles],
-            'permissions': [p['code'] for p in permissions]
+        'code': 200,
+        'data': {
+            'token': token,
+            'user': {
+                'id': user['id'],
+                'username': user['username'],
+                'email': user.get('email', ''),
+                'roles': [r['name'] for r in roles],
+                'permissions': [p['code'] for p in permissions]
+            }
         }
     })
 
@@ -119,26 +134,40 @@ def admin_logout():
         token = token[7:]
     
     auth_manager.delete_session(token)
-    return jsonify({'message': '退出登录成功'})
+    return jsonify({
+        'code': 200,
+        'message': '退出登录成功',
+        'data': {}
+    })
 
 @admin_bp.route('/profile', methods=['GET'])
 @login_required
 def get_profile():
     """获取当前用户信息"""
     user_id = g.current_user['id']
-    user = auth_manager.get_user_by_id(user_id)
-    roles = auth_manager.get_user_roles(user_id)
-    permissions = auth_manager.get_user_permissions(user_id)
-    
-    return jsonify({
-        'user': {
-            'id': user['id'],
-            'username': user['username'],
-            'email': user.get('email', ''),
-            'roles': roles,
-            'permissions': permissions
-        }
-    })
+    try:
+        user = auth_manager.get_user_by_id(user_id)
+        roles = auth_manager.get_user_roles(user_id)
+        permissions = auth_manager.get_user_permissions(user_id)
+        
+        # 返回符合标准格式的响应
+        return jsonify({
+            'code': 200,
+            'data': {
+                'id': user['id'],
+                'username': user['username'],
+                'email': user.get('email', ''),
+                'roles': [r['name'] for r in roles],
+                'permissions': [p['code'] for p in permissions]
+            }
+        })
+    except Exception as e:
+        print(f"获取用户信息失败: {str(e)}")
+        return jsonify({
+            'code': 500,
+            'message': f'获取用户信息失败: {str(e)}',
+            'data': {}
+        }), 500
 
 # 用户管理接口
 @admin_bp.route('/users', methods=['GET'])
@@ -154,6 +183,23 @@ def get_users():
         
         result = auth_manager.get_users(page, page_size)
         
+        # 为每个用户添加roles字段和确保所有必要字段存在
+        for user in result['users']:
+            # 获取用户角色
+            roles = auth_manager.get_user_roles(int(user['id']))
+            # 将状态字段转换为数字类型
+            user['status'] = int(user['status'])
+            # 添加roles字段，格式符合前端期望
+            user['roles'] = roles
+            # 确保created_at字段存在（有些旧数据可能没有）
+            if 'created_at' not in user or not user['created_at']:
+                user['created_at'] = '2023-01-01T00:00:00'
+            # 添加缺失的last_login字段，如果没有登录记录则提供默认值
+            if 'last_login' not in user or not user['last_login']:
+                user['last_login'] = ''  # 空字符串表示从未登录
+            # 确保id字段是字符串类型以避免前端类型错误
+            user['id'] = str(user['id'])
+        
         # 如果需要按用户名筛选
         if username:
             filtered_users = []
@@ -163,10 +209,18 @@ def get_users():
             result['users'] = filtered_users
             result['total'] = len(filtered_users)
         
-        return jsonify(result)
+        # 返回符合前端期望格式的数据，包含code和data字段
+        return jsonify({
+            'code': 200,
+            'data': result
+        })
     except Exception as e:
         print(f"获取用户列表失败: {str(e)}")
-        return jsonify({'error': f'获取用户列表失败: {str(e)}'}), 500
+        return jsonify({
+            'code': 500,
+            'message': f'获取用户列表失败: {str(e)}',
+            'data': None
+        }), 500
 
 @admin_bp.route('/users', methods=['POST'])
 @login_required
@@ -281,8 +335,27 @@ def assign_user_roles(user_id):
 @require_permission('role:list')
 def get_roles():
     """获取角色列表"""
-    roles = auth_manager.get_roles()
-    return jsonify({'roles': roles})
+    try:
+        roles = auth_manager.get_roles()
+        # 为每个角色添加权限数量信息
+        for role in roles:
+            role_id = int(role['id'])
+            permissions = auth_manager.get_role_permissions(role_id)
+            role['permissions'] = permissions  # 添加权限列表
+            role['permission_count'] = len(permissions)  # 添加权限数量
+        
+        # 返回符合前端期望格式的数据，包含code和data字段
+        return jsonify({
+            'code': 200,
+            'data': roles
+        })
+    except Exception as e:
+        print(f"获取角色列表失败: {str(e)}")
+        return jsonify({
+            'code': 500,
+            'message': f'获取角色列表失败: {str(e)}',
+            'data': []
+        }), 500
 
 @admin_bp.route('/roles', methods=['POST'])
 @login_required
@@ -386,8 +459,21 @@ def assign_role_permissions(role_id):
 @require_permission('permission:list')
 def get_permissions():
     """获取权限列表"""
-    permissions = auth_manager.get_permissions()
-    return jsonify({'permissions': permissions})
+    try:
+        permissions = auth_manager.get_permissions()
+        # 返回符合前端期望格式的数据，包含code和data字段
+        # 每个权限包含：id、code、name、type、parent_id、status、description、created_at、updated_at
+        return jsonify({
+            'code': 200,
+            'data': permissions
+        })
+    except Exception as e:
+        print(f"获取权限列表失败: {str(e)}")
+        return jsonify({
+            'code': 500,
+            'message': f'获取权限列表失败: {str(e)}',
+            'data': []
+        }), 500
 
 @admin_bp.route('/permissions', methods=['POST'])
 @login_required
@@ -399,15 +485,15 @@ def create_permission():
     name = data.get('name')
     permission_type = data.get('type', 'menu')
     parent_id = data.get('parent_id', 0)
-    path = data.get('path', '')
-    method = data.get('method', '')
+    status = data.get('status', 1)
+    description = data.get('description', '')
     
     if not code or not name:
         return jsonify({'error': '权限代码和名称不能为空'}), 400
     
     try:
         permission = auth_manager.create_permission(code, name, permission_type, 
-                                                   parent_id, path, method)
+                                                   parent_id, status, description)
         return jsonify({
             'message': '权限创建成功',
             'permission': permission
@@ -442,10 +528,12 @@ def update_permission(permission_id):
         update_data['type'] = data['type']
     if 'parent_id' in data:
         update_data['parent_id'] = data['parent_id']
-    if 'path' in data:
-        update_data['path'] = data['path']
-    if 'method' in data:
-        update_data['method'] = data['method']
+    # 允许更新状态字段
+    if 'status' in data:
+        try:
+            update_data['status'] = int(data['status'])
+        except Exception:
+            update_data['status'] = 1 if str(data['status']).strip() == '1' else 0
     
     if not update_data:
         return jsonify({'error': '没有提供要更新的字段'}), 400

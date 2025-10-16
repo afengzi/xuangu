@@ -13,24 +13,6 @@ from backend.app.config import Config
 app = create_app()
 
 if __name__ == '__main__':
-    # 在启动服务器之前执行数据初始化操作
-    print("开始执行数据初始化操作...")
-    try:
-        # 添加scripts目录到Python路径
-        scripts_path = os.path.join(project_root, 'scripts')
-        sys.path.insert(0, scripts_path)
-        
-        # 导入并执行初始化脚本
-        from scripts.init_admin import main as init_admin_main
-        init_result = init_admin_main()
-        
-        if init_result == 0:
-            print("数据初始化成功！")
-        else:
-            print(f"数据初始化返回非零值：{init_result}")
-    except Exception as e:
-        print(f"数据初始化过程中发生错误：{str(e)}")
-        print("继续启动服务器...")
     
     # 使用配置文件中的主机和端口设置
     host = getattr(Config, 'APP_HOST', '0.0.0.0')

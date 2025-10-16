@@ -16,7 +16,10 @@ class Config:
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'your-secret-key-here')
     
     # 权限管理Redis配置（与主配置保持一致，避免数据库不匹配）
-    REDIS_AUTH_DB = int(os.getenv('DB', 1))
+    REDIS_AUTH_DB = int(os.getenv('ADMIN_DB', 6))
+    
+    # 管理后台Redis配置
+    ADMIN_DB = int(os.getenv('ADMIN_DB', 6))
     
     # 应用配置
     APP_HOST = os.getenv('APP_HOST', '0.0.0.0')

@@ -1,18 +1,39 @@
 <template>
   <div class="users-container">
     <div class="filter-container">
+      <el-button
+        class="filter-item"
+        type="primary"
+        @click="$router.push('/admin/dashboard')"
+      >
+        返回Dashboard
+      </el-button>
+      
+      <el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        icon="el-icon-edit"
+        @click="handleCreate"
+      >
+        <span style="margin-left: 8px;">添加用户</span>
+      </el-button>
+      
+      <div style="flex: 1;"></div>
+      
       <el-input
         v-model="listQuery.username"
         placeholder="用户名"
-        style="width: 200px;"
+        style="width: 200px; margin-right: 10px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
+      
       <el-select
         v-model="listQuery.role"
         placeholder="角色"
         clearable
-        style="width: 130px"
+        style="width: 130px; margin-right: 10px;"
         class="filter-item"
       >
         <el-option
@@ -22,6 +43,7 @@
           :value="item.value"
         />
       </el-select>
+      
       <el-button
         v-waves
         class="filter-item"
@@ -30,15 +52,6 @@
         @click="handleFilter"
       >
         搜索
-      </el-button>
-      <el-button
-        class="filter-item"
-        style="margin-left: 10px;"
-        type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate"
-      >
-        添加用户
       </el-button>
     </div>
 
@@ -51,67 +64,73 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="ID" prop="id" align="center" width="80">
-        <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
+      <el-table-column label="ID" align="center" width="80">
+        <template #default="{row}">
+          <span>{{ row?.id ?? '' }}</span>
         </template>
       </el-table-column>
       <el-table-column label="用户名" width="150px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.username }}</span>
+        <template #default="{row}">
+          <span>{{ row?.username ?? '未知用户' }}</span>
         </template>
       </el-table-column>
       <el-table-column label="角色" width="200px" align="center">
-        <template slot-scope="{row}">
-          <el-tag
-            v-for="role in row.roles"
-            :key="role.id"
-            style="margin-right: 5px;"
-          >
-            {{ role.name }}
-          </el-tag>
+        <template #default="{row}">
+          <template v-if="row?.roles && row.roles.length > 0">
+            <el-tag
+              v-for="role in row.roles"
+              :key="role?.id"
+              type="info"
+              style="margin-right: 5px;"
+            >
+              {{ role?.name ?? '未知角色' }}
+            </el-tag>
+          </template>
+          <template v-else>
+            <span style="color: #909399; font-size: 12px;">无角色</span>
+          </template>
         </template>
       </el-table-column>
       <el-table-column label="状态" class-name="status-col" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status === 1 ? '启用' : '禁用' }}
+        <template #default="{row}">
+          <el-tag :type="row?.status == 1 ? 'success' : 'danger'">
+            {{ row?.status == 1 ? '启用' : '禁用' }}
           </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="创建时间" width="150px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.created_at | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        <template #default="{row}">
+          <span>{{ formatTime(row?.created_at) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="最后登录时间" width="150px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.last_login | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        <template #default="{row}">
+          <span>{{ formatTime(row?.last_login) || '从未登录' }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+        <template #default="{row,$index}">
+          <el-button type="primary" size="small" @click="handleUpdate(row)">
             编辑
           </el-button>
           <el-button
-            v-if="row.status === 1"
-            size="mini"
+            v-if="row?.status == 1"
+            size="small"
             type="warning"
             @click="handleModifyStatus(row, 0)"
           >
             禁用
           </el-button>
           <el-button
-            v-if="row.status === 0"
-            size="mini"
+            v-if="row?.status == 0"
+            size="small"
             type="success"
             @click="handleModifyStatus(row, 1)"
           >
             启用
           </el-button>
           <el-button
-            size="mini"
+            size="small"
             type="danger"
             @click="handleDelete(row,$index)"
           >
@@ -132,7 +151,7 @@
       :page-sizes="[10, 20, 50, 100]"
     />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" v-model="dialogFormVisible">
       <el-form
         ref="dataForm"
         :rules="rules"
@@ -153,9 +172,9 @@
         </el-form-item>
         <el-form-item label="状态">
           <el-radio-group v-model="temp.status">
-            <el-radio :label="1">启用</el-radio>
-            <el-radio :label="0">禁用</el-radio>
-          </el-radio-group>
+          <el-radio :value="1">启用</el-radio>
+          <el-radio :value="0">禁用</el-radio>
+        </el-radio-group>
         </el-form-item>
         <el-form-item label="角色">
           <el-select v-model="temp.role_ids" multiple placeholder="请选择角色">
@@ -168,7 +187,8 @@
           </el-select>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <template #footer>
+        <div class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
           取消
         </el-button>
@@ -178,7 +198,8 @@
         >
           确认
         </el-button>
-      </div>
+        </div>
+      </template>
     </el-dialog>
   </div>
 </template>
@@ -192,20 +213,10 @@ import { parseTime } from '@/utils/formatters/timeFormatters.js'
 export default {
   name: 'UserManagement',
   directives: { waves },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        1: 'success',
-        0: 'danger'
-      }
-      return statusMap[status]
-    },
-    parseTime
-  },
   data() {
     return {
       tableKey: 0,
-      list: null,
+      list: [], // 初始化为空数组，确保表格能正确渲染
       total: 0,
       listLoading: true,
       listQuery: {
@@ -238,24 +249,72 @@ export default {
     this.getRoles()
   },
   methods: {
+    formatTime(time) {
+      if (!time) return '-'
+      try {
+        return parseTime(time, '{y}-{m}-{d} {h}:{i}')
+      } catch (error) {
+        console.warn('时间格式化失败:', time, error)
+        return '-'
+      }
+    },
     async getList() {
       this.listLoading = true
       try {
-        // 改进的异常处理，更好地捕获和展示错误信息
+        console.log('开始获取用户列表...')
         const response = await getUsers(this.listQuery)
-        // 兼容不同的响应格式
-        if (response.items !== undefined) {
-          this.list = response.items
-          this.total = response.total
-        } else {
-          // 假设response本身就是数据数组
-          this.list = Array.isArray(response) ? response : [response]
-          this.total = this.list.length
+        console.log('用户API Response:', response)
+        
+        // 处理多种可能的响应格式
+        let users = []
+        let total = 0
+        
+        if (response && typeof response === 'object') {
+          if (response.items !== undefined) {
+            // 格式: {items: [], total: number}
+            users = response.items
+            total = response.total
+          } else if (response.users !== undefined) {
+            // 格式: {users: [], total: number}
+            users = response.users
+            total = response.total
+          } else if (Array.isArray(response)) {
+            // 格式: 直接数组
+            users = response
+            total = response.length
+          } else {
+            // 其他对象格式，尝试提取数据
+            users = response.data || response.list || []
+            total = response.total || users.length
+          }
+        } else if (Array.isArray(response)) {
+          // 直接是数组的情况
+          users = response
+          total = response.length
         }
+        
+        // 数据验证和过滤
+        if (!Array.isArray(users)) {
+          console.warn('用户数据不是数组，转换为数组:', users)
+          users = users ? [users] : []
+        }
+        
+        // 过滤空数据
+        users = users.filter(user => user && user.id)
+        console.log('过滤后的用户数据:', users)
+        
+        this.list = users
+        this.total = total || users.length
+        
+        // 空数据处理
+        if (users.length === 0) {
+          console.log('用户列表为空')
+          this.$message.info('暂无用户数据')
+        }
+        
       } catch (error) {
         console.error('获取用户列表失败:', error)
         this.$message.error('获取用户列表失败: ' + (error.message || '未知错误'))
-        // 确保即使出错也有数据显示
         this.list = []
         this.total = 0
       } finally {
@@ -265,23 +324,51 @@ export default {
     async getRoles() {
       try {
         const response = await getRoles()
+        console.log('角色API Response:', response)
         
-        // 兼容不同的响应格式
-        const rolesData = response.data || response.roles || response
+        // 处理多种可能的响应格式
+        let roles = []
         
-        if (Array.isArray(rolesData)) {
-          this.roleOptions = rolesData.map(role => ({
-            value: role.id,
-            label: role.name
-          }))
-        } else {
-          console.error('获取角色列表失败: 响应数据不是数组', rolesData)
-          this.$message.error('获取角色列表失败: 数据格式错误')
+        if (response && typeof response === 'object') {
+          if (Array.isArray(response)) {
+            roles = response
+          } else if (response.items !== undefined) {
+            roles = response.items
+          } else if (response.data !== undefined) {
+            roles = response.data
+          } else if (response.list !== undefined) {
+            roles = response.list
+          } else {
+            // 其他对象格式，尝试提取数据
+            roles = Object.values(response).filter(item => item && typeof item === 'object')
+          }
+        } else if (Array.isArray(response)) {
+          roles = response
         }
+        
+        // 数据验证和过滤
+        if (!Array.isArray(roles)) {
+          console.warn('角色数据不是数组，转换为数组:', roles)
+          roles = roles ? [roles] : []
+        }
+        
+        // 过滤空数据并转换为el-option需要的格式
+        roles = roles.filter(role => role && role.id).map(role => ({
+          value: role.id,
+          label: role.name || role.role_name || '未知角色'
+        }))
+        
+        this.roleOptions = roles
+        console.log('处理后的角色数据:', roles)
+        
+        // 空数据处理
+        if (roles.length === 0) {
+          console.log('角色列表为空')
+        }
+        
       } catch (error) {
         console.error('获取角色列表失败:', error)
         this.$message.error('获取角色列表失败: ' + (error.message || '未知错误'))
-        // 提供默认的角色选项，避免界面空白
         this.roleOptions = []
       }
     },
@@ -473,6 +560,9 @@ export default {
 <style scoped>
 .filter-container {
   padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .filter-container .filter-item {

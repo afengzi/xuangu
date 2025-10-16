@@ -98,19 +98,23 @@ export default {
       try {
         // 获取用户统计
         const usersRes = await getUsers({ page: 1, limit: 1 })
-        this.stats.userCount = usersRes.data.total || 0
+        // 注意：response interceptor已经提取了data字段，直接使用即可
+        this.stats.userCount = usersRes.total || 0
 
         // 获取角色统计
         const rolesRes = await getRoles()
-        this.stats.roleCount = rolesRes.data.length || 0
+        // 直接使用返回的数据数组
+        this.stats.roleCount = rolesRes.length || 0
 
         // 获取权限统计
         const permissionsRes = await getPermissions()
-        this.stats.permissionCount = permissionsRes.data.length || 0
+        // 直接使用返回的数据数组
+        this.stats.permissionCount = permissionsRes.length || 0
 
         // TODO: 获取在线用户数（需要后端支持）
         this.stats.onlineCount = 0
       } catch (error) {
+        console.error('加载统计数据失败:', error)
         this.$message.error('加载统计数据失败')
       }
     },
@@ -118,9 +122,11 @@ export default {
       try {
         // 直接从API获取用户信息
         const res = await getProfile()
-        this.userInfo = res.data || { username: '管理员' }
-        this.userRoles = res.data.roles || ['管理员']
+        // 注意：response interceptor已经提取了data字段，直接使用即可
+        this.userInfo = res || { username: '管理员' }
+        this.userRoles = res.roles || ['管理员']
       } catch (error) {
+        console.error('加载用户信息失败:', error)
         this.$message.error('加载用户信息失败')
         // 提供默认值
         this.userInfo = { username: '管理员' }

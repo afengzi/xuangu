@@ -19,27 +19,27 @@ def init_permissions():
     """初始化基础权限"""
     permissions = [
         # 用户管理权限
-        {'code': 'user:list', 'name': '查看用户列表', 'type': 'operation'},
-        {'code': 'user:view', 'name': '查看用户详情', 'type': 'operation'},
-        {'code': 'user:add', 'name': '添加用户', 'type': 'operation'},
-        {'code': 'user:edit', 'name': '编辑用户', 'type': 'operation'},
-        {'code': 'user:delete', 'name': '删除用户', 'type': 'operation'},
-        {'code': 'user:assign_role', 'name': '分配用户角色', 'type': 'operation'},
+        {'code': 'user:list', 'name': '查看用户列表', 'type': 'operation','status':1,'description':'查看所有用户信息'},
+        {'code': 'user:view', 'name': '查看用户详情', 'type': 'operation','status':1,'description':'查看用户详细信息'},
+        {'code': 'user:add', 'name': '添加用户', 'type': 'operation','status':1,'description':'添加新用户'},
+        {'code': 'user:edit', 'name': '编辑用户', 'type': 'operation','status':1,'description':'编辑用户信息'},
+        {'code': 'user:delete', 'name': '删除用户', 'type': 'operation','status':1,'description':'删除用户'},
+        {'code': 'user:assign_role', 'name': '分配用户角色', 'type': 'operation','status':1,'description':'为用户分配角色'},
         
         # 角色管理权限
-        {'code': 'role:list', 'name': '查看角色列表', 'type': 'operation'},
-        {'code': 'role:view', 'name': '查看角色详情', 'type': 'operation'},
-        {'code': 'role:add', 'name': '添加角色', 'type': 'operation'},
-        {'code': 'role:edit', 'name': '编辑角色', 'type': 'operation'},
-        {'code': 'role:delete', 'name': '删除角色', 'type': 'operation'},
-        {'code': 'role:assign_permission', 'name': '分配角色权限', 'type': 'operation'},
+        {'code': 'role:list', 'name': '查看角色列表', 'type': 'operation','status':1,'description':'查看所有角色信息'},
+        {'code': 'role:view', 'name': '查看角色详情', 'type': 'operation','status':1,'description':'查看角色详细信息'},
+        {'code': 'role:add', 'name': '添加角色', 'type': 'operation','status':1,'description':'添加新角色'},
+        {'code': 'role:edit', 'name': '编辑角色', 'type': 'operation','status':1,'description':'编辑角色信息'},
+        {'code': 'role:delete', 'name': '删除角色', 'type': 'operation','status':1,'description':'删除角色'},
+        {'code': 'role:assign_permission', 'name': '分配角色权限', 'type': 'operation','status':1,'description':'为角色分配权限'},
         
         # 权限管理权限
-        {'code': 'permission:list', 'name': '查看权限列表', 'type': 'operation'},
-        {'code': 'permission:view', 'name': '查看权限详情', 'type': 'operation'},
-        {'code': 'permission:add', 'name': '添加权限', 'type': 'operation'},
-        {'code': 'permission:edit', 'name': '编辑权限', 'type': 'operation'},
-        {'code': 'permission:delete', 'name': '删除权限', 'type': 'operation'},
+        {'code': 'permission:list', 'name': '查看权限列表', 'type': 'operation','status':1,'description':'查看所有权限信息'},
+        {'code': 'permission:view', 'name': '查看权限详情', 'type': 'operation','status':1,'description':'查看权限详细信息'},
+        {'code': 'permission:add', 'name': '添加权限', 'type': 'operation','status':1,'description':'添加新权限'},
+        {'code': 'permission:edit', 'name': '编辑权限', 'type': 'operation','status':1,'description':'编辑权限信息'},
+        {'code': 'permission:delete', 'name': '删除权限', 'type': 'operation','status':1,'description':'删除权限'},
     ]
     
     permission_ids = []
@@ -47,7 +47,9 @@ def init_permissions():
         permission = auth_manager.create_permission(
             code=perm['code'],
             name=perm['name'],
-            permission_type=perm['type']
+            permission_type=perm['type'],
+            status=perm['status'],
+            description=perm['description']
         )
         permission_ids.append(permission['id'])
         print(f"✓ 创建权限: {perm['name']} ({perm['code']})")
@@ -104,6 +106,7 @@ def create_admin_user():
     print(f"✓ 创建管理员用户: {admin_user['username']}")
     
     return admin_user['id']
+
 
 def main():
     """主函数"""
