@@ -155,12 +155,14 @@ export default {
 
 <style scoped>
 .login-container {
-  min-height: 100vh;
+  height: 100vh;
   background: linear-gradient(135deg, #e0f2fe 0%, #f3e5f5 50%, #fff3e0 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
 }
 
 .login-box {
@@ -169,20 +171,21 @@ export default {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 10px 25px rgba(0, 0, 0, 0.05);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 40px;
+  padding: 32px 40px;
   width: 100%;
-  max-width: 400px;
+  max-width: 380px;
+  margin: 0 auto;
 }
 
 .login-header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 24px;
 }
 
 .login-header h2 {
   color: #1e293b;
-  margin: 0 0 10px 0;
-  font-size: 28px;
+  margin: 0 0 8px 0;
+  font-size: 26px;
   font-weight: 700;
   letter-spacing: -0.5px;
 }
@@ -190,22 +193,22 @@ export default {
 .login-header p {
   color: #64748b;
   margin: 0;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
 }
 
 .login-form {
-  margin-top: 20px;
+  margin-top: 16px;
 }
 
 .login-form .el-form-item {
-  margin-bottom: 22px;
+  margin-bottom: 18px;
 }
 
 .login-btn {
   width: 100%;
-  height: 45px;
-  font-size: 16px;
+  height: 42px;
+  font-size: 15px;
   border-radius: 8px;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -223,15 +226,24 @@ export default {
 /* 响应式设计 */
 @media (max-width: 480px) {
   .login-container {
-    padding: 15px;
+    padding: 0;
   }
   
   .login-box {
-    padding: 30px 20px;
+    padding: 24px 20px;
+    max-width: 340px;
   }
   
   .login-header h2 {
     font-size: 24px;
+  }
+  
+  .login-header {
+    margin-bottom: 20px;
+  }
+  
+  .login-form .el-form-item {
+    margin-bottom: 16px;
   }
 }
 </style>

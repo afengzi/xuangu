@@ -42,11 +42,6 @@ router.beforeEach((to, from, next) => {
     document.title = to.meta.title
   }
   
-  // 详细调试日志 - 开始
-  console.log('===== 路由守卫开始 =====')
-  console.log('当前访问路由:', to.path)
-  console.log('来源路由:', from.path)
-  
   // 检查是否需要登录
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
@@ -74,15 +69,8 @@ router.beforeEach((to, from, next) => {
       console.error('解析用户角色列表失败:', e)
     }
   
-  console.log('路由守卫检查 - requiresAuth:', requiresAuth)
-  console.log('路由守卫检查 - isLoggedIn:', isLoggedIn)
-  console.log('路由守卫检查 - hasAdminPermission:', hasAdminPermission)
-  console.log('路由守卫检查 - 用户角色列表:', JSON.stringify(userRoles))
-  console.log('路由守卫检查 - isAdminRoute:', isAdminRoute)
-  
   // 检查是否是管理后台路由且不是登录页面
   if (isAdminRoute) {
-    console.log('处理管理后台路由')
     // 特殊处理：如果是无权限访问或跳转失败页面，允许访问
     if (to.path === '/admin/no-permission' || to.path === '/admin/redirect-failed') {
       console.log('访问特殊错误页面，允许访问')
@@ -107,7 +95,6 @@ router.beforeEach((to, from, next) => {
     console.log('无需特殊处理，继续访问')
     next()
   }
-  console.log('===== 路由守卫结束 =====')
   // 详细调试日志 - 结束
 })
 

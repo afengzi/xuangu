@@ -50,7 +50,7 @@
       <el-button
         :loading="loading"
         type="primary"
-        style="width:100%;margin-bottom:30px;"
+        style="width:100%;margin-bottom:20px;height:42px;font-size:15px;border-radius:8px;"
         @click.native.prevent="handleLogin"
       >
         登录
@@ -281,10 +281,15 @@ export default {
 
 /* reset element-ui css */
 .login-container {
-  min-height: 100%;
+  height: 100vh;
   width: 100%;
   background-color: #283443;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
 }
 
 .login-container .el-input {
@@ -313,23 +318,31 @@ export default {
 .login-container .el-form-item {
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
+  border-radius: 8px;
   color: #454545;
+  margin-bottom: 20px;
 }
 
 .login-container .login-form {
   position: relative;
-  width: 520px;
-  max-width: 100%;
-  padding: 160px 35px 0;
+  width: 420px;
+  max-width: 90%;
+  padding: 0;
   margin: 0 auto;
   overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 40px 35px;
 }
 
 .login-container .tips {
-  font-size: 14px;
+  font-size: 13px;
   color: #fff;
-  margin-bottom: 10px;
+  margin-bottom: 0;
+  text-align: center;
+  opacity: 0.8;
 }
 
 .login-container .tips span:first-of-type {
@@ -349,9 +362,9 @@ export default {
 }
 
 .login-container .title-container .title {
-  font-size: 26px;
+  font-size: 24px;
   color: #fff;
-  margin: 0px auto 40px auto;
+  margin: 0px auto 30px auto;
   text-align: center;
   font-weight: bold;
 }

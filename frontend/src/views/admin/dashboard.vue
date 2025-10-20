@@ -41,7 +41,7 @@
     </el-row>
 
     <el-row :gutter="20" class="dashboard-info">
-      <el-col :span="12">
+      <el-col :span="24">
         <el-card title="我的信息">
           <div class="user-info">
             <p><strong>用户名：</strong>{{ userInfo.username }}</p>
@@ -50,18 +50,16 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :span="12">
-        <el-card title="快速操作">
-          <div class="quick-actions">
-            <el-button type="primary" @click="$router.push('/admin/users')">
-              用户管理
-            </el-button>
-            <el-button type="success" @click="$router.push('/admin/roles')">
-              角色管理
-            </el-button>
-            <el-button type="warning" @click="$router.push('/admin/permissions')">
-              权限管理
-            </el-button>
+    </el-row>
+    
+    <!-- 系统信息 -->
+    <el-row :gutter="20" class="dashboard-system">
+      <el-col :span="24">
+        <el-card title="系统信息">
+          <div class="system-info">
+            <p><strong>系统版本：</strong>v1.0.0</p>
+            <p><strong>运行环境：</strong>生产环境</p>
+            <p><strong>最后更新：</strong>{{ systemUpdateTime }}</p>
           </div>
         </el-card>
       </el-col>
@@ -83,6 +81,7 @@ export default {
         onlineCount: 0
       },
       loginTime: new Date().toLocaleString(),
+      systemUpdateTime: new Date().toLocaleString(),
       userInfo: {
         username: ''
       },
@@ -192,5 +191,18 @@ export default {
 
 .dashboard-container .dashboard-info .quick-actions .el-button {
   margin: 10px;
+}
+
+.dashboard-container .dashboard-system {
+  margin-top: 20px;
+}
+
+.dashboard-container .dashboard-system .system-info p {
+  margin: 10px 0;
+  color: #606266;
+}
+
+.dashboard-container .dashboard-system .system-info p strong {
+  color: #303133;
 }
 </style>
