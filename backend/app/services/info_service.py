@@ -668,12 +668,65 @@ def get_detail_info_by_code(code: str) -> dict:
     返回:dict 股票代码对应的所有信息
     """
     try:
+        print(f"获取股票代码 {code} 的详细信息")
         response = requests.get(f"http://192.168.1.188:8077/get-stock-analysis?stock_code={code}")
+        print(f"外部API响应状态码: {response.status_code}")
         if response.status_code == 200:
-            return response.json()
+            data = response.json()
+            print(f"外部API返回数据: {data}")
+            return data
         else:
-            return {}
+            print(f"外部API返回错误状态码: {response.status_code}")
+            # 尝试从Redis获取基础信息作为备选
+            print(f"尝试从Redis获取股票 {code} 的基础信息")
+            return get_basic_stock_info_from_redis(code)
     except Exception as e:
         print(f"获取股票代码 {code} 信息失败: {e}")
-        return {}
+        # 尝试从Redis获取基础信息作为备选
+        print(f"异常时尝试从Redis获取股票 {code} 的基础信息")
+        return get_basic_stock_info_from_redis(code)
+
+
+def get_basic_stock_info_from_redis(code: str) -> dict:
+    """
+    从Redis获取股票基础信息作为备选方案
+    code:str 股票代码
+    返回:dict 股票基础信息
+    """
+    try:
+        r = connect_redis()
+        # 获取股票简称
+        stock_name = r.hmget(f"code:{code}", "股票简称")
+        if stock_name and stock_name[0]:
+            stock_name = stock_name[0]
+        else:
+            stock_name = code
+        
+        # 获取主题信息
+        themes = get_themes_key()
+        theme_info = None
+        if themes and len(themes) > 0:
+            theme_data = r.hmget(f"theme:detail:{themes[0]}:{code}", "desc", "theme")
+            if theme_data and len(theme_data) >= 2:
+                theme_info = {
+                    'desc': theme_data[0] or '',
+                    'theme': theme_data[1] or ''
+                }
+        
+        r.close()
+        
+        # 返回基础信息格式
+        return {
+            'code': code,
+            'name': stock_name,
+            'theme_info': theme_info,
+            'basic_info': f'股票代码: {code}, 股票简称: {stock_name}'
+        }
+    except Exception as e:
+        print(f"从Redis获取股票 {code} 基础信息失败: {e}")
+        return {
+            'code': code,
+            'name': code,
+            'basic_info': f'股票代码: {code}'
+        }
 

@@ -29,23 +29,36 @@ export default defineConfig({
     port: 3000,
     open: true,
     host: '0.0.0.0',
+    // 确保 public 目录下的文件可以直接访问
+    fs: {
+      allow: ['.', '../shared']
+    },
     proxy: {
+      // 共享文件和legacy文件让Vite直接从public目录提供，不经过代理
       '/api': {
         target: 'http://0.0.0.0:5000',
         changeOrigin: true,
         secure: false
       },
       // 将 /legacy 交给后端 Flask 提供的模板，避免在开发环境被前端路由拦截导致刷新循环
-      '/legacy': {
+      '^/legacy$': {
+        target: 'http://0.0.0.0:5000',
+        changeOrigin: true,
+        secure: false
+      },
+      // 代理 /legacy/ 开头的路径（但不包括 /legacy.html）
+      '^/legacy/(.*)$': {
+        target: 'http://0.0.0.0:5000',
+        changeOrigin: true,
+        secure: false
+      },
+      // 代理所有静态资源请求到后端
+      '/static': {
         target: 'http://0.0.0.0:5000',
         changeOrigin: true,
         secure: false
       },
     },
-    // 添加静态资源服务，使共享文件可通过 /shared/ 路径访问
-    fs: {
-      allow: ['.', '../shared']
-    }
   },
   resolve: {
     alias: {

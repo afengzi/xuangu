@@ -7,10 +7,21 @@
 (function() {
   'use strict';
   
+  // 确保 FactorMapping 可用
+  if (typeof window.FactorMapping === 'undefined') {
+    console.warn('FactorMapping 未定义，创建默认对象');
+    window.FactorMapping = {
+      FUNDAMENTAL_NAME_MAP: {},
+      TECHNICAL_NAME_MAP: {},
+      CAPITAL_NAME_MAP: {},
+      CHINESE_TO_ENGLISH_MAP: {}
+    };
+  }
+  
   // 全局 API 对象
   window.LegacyAPI = {
-    // 基础配置
-    API_BASE: 'http://localhost:5001/api',
+    // 基础配置 - 使用相对路径，自动适配当前域名和端口
+    API_BASE: '/api',
     
     // 认证头
     getAuthHeaders: function() {
@@ -118,7 +129,14 @@
     // 因子映射常量（直接使用全局变量）
     factorMapping: {
       // 中文显示名 -> 英文键名（用于 legacy 页面转换）
-      chineseToEnglish: window.FactorMapping.CHINESE_TO_ENGLISH_MAP
+      chineseToEnglish: function() {
+        if (window.FactorMapping && window.FactorMapping.CHINESE_TO_ENGLISH_MAP) {
+          return window.FactorMapping.CHINESE_TO_ENGLISH_MAP;
+        } else {
+          console.warn('CHINESE_TO_ENGLISH_MAP 不可用，返回空对象');
+          return {};
+        }
+      }()
     },
     
     // 工具函数（对应 web/src/utils/stockFilterUtils.js）
@@ -134,7 +152,7 @@
         var indicatorSpecial = '';
         
         // 基本面因子映射（使用全局变量）
-        var fundamentalNameMap = window.FactorMapping.FUNDAMENTAL_NAME_MAP;
+        var fundamentalNameMap = (window.FactorMapping && window.FactorMapping.FUNDAMENTAL_NAME_MAP) || {};
         
         // 格式化范围
         var formatRange = function(text, addYi) {
@@ -206,7 +224,7 @@
         
         // 处理资金面（使用全局变量）
         var c = all.capital || {};
-        var nameMap = window.FactorMapping.CAPITAL_NAME_MAP;
+        var nameMap = (window.FactorMapping && window.FactorMapping.CAPITAL_NAME_MAP) || {};
         Object.keys(nameMap).forEach(function(key) {
           var val = c[key];
           if (!val) return;

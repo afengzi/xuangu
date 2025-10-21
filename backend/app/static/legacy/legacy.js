@@ -234,7 +234,7 @@
       // 按类型分类因子（复用因子分类逻辑）
       categorizeFactors: function(allSelectedFactors) {
         var categories = this.getFactorCategories();
-        var keyMapping = API.factorMapping.chineseToEnglish || {};
+        var keyMapping = (API.factorMapping && API.factorMapping.chineseToEnglish) || {};
         var result = { fundamental: {}, technical: {}, capital: {} };
         
         Object.keys(allSelectedFactors).forEach(function(factorName) {
@@ -313,13 +313,23 @@
       onShowDetail: function(code){
         var self = this;
         if (!code) return;
+        console.log('获取股票详情，代码:', code);
         API.stockAPI.getDetailInfo(code).then(function(resp){
+          console.log('股票详情API响应:', resp);
           var data = resp && resp.data ? resp.data : (resp || {});
           self.hoverDetail = data;
           // 生成与主站一致的 HTML
           var tt = window.StockTooltipFactory && window.StockTooltipFactory();
-          self.hoverDetailHtml = tt && tt.renderContent ? tt.renderContent(data) : '';
-        }).catch(function(){
+          console.log('StockTooltipFactory:', tt);
+          if (tt && tt.renderContent) {
+            self.hoverDetailHtml = tt.renderContent(data);
+            console.log('生成的HTML内容:', self.hoverDetailHtml);
+          } else {
+            self.hoverDetailHtml = '';
+            console.log('StockTooltipFactory不可用或没有renderContent方法');
+          }
+        }).catch(function(err){
+          console.error('获取股票详情失败:', err);
           self.hoverDetail = {};
           self.hoverDetailHtml = '';
         });

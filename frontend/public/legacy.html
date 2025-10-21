@@ -13,13 +13,13 @@
     <script src="https://cdn.jsdelivr.net/npm/es6-promise/dist/es6-promise.auto.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/whatwg-fetch/dist/fetch.umd.min.js"></script>
     <!-- 题材缓存工具(与主站一致的缓存逻辑) -->
-    <script src="/static/shared/utils/themesCacheCore.js?v=20250926"></script>
+    <script src="/shared/utils/themesCacheCore.js?v=20250926"></script>
     <!-- 股票代码跳转共享逻辑(与主站一致) -->
-    <script src="/static/shared/utils/stockLinkCore.js?v=20250926"></script>
+    <script src="/shared/utils/stockLinkCore.js?v=20250926"></script>
     <!-- 因子/数据处理共享核心(与主站一致) -->
-    <script src="/static/shared/utils/stockFilterCore.js?v=20250926"></script>
+    <script src="/shared/utils/stockFilterCore.js?v=20250926"></script>
     <!-- 股票悬浮提示渲染共享逻辑(与主站一致) -->
-    <script src="/static/shared/utils/stockTooltipCore.js?v=20250926"></script>
+    <script src="/shared/utils/stockTooltipCore.js?v=20250926"></script>
   </head>
   <body>
     <div id="app-legacy" class="container" v-cloak>
@@ -189,14 +189,29 @@
     <!-- Vue2 + Element UI for IE11 -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/element-ui@2.15.14/lib/index.js"></script>
-        <!-- 主站因子映射全局变量(UMD 全局 + CommonJS) -->
-        <script src="/static/shared/config/factorMapping.js"></script>
-        <!-- 主站因子配置全局变量(UMD 全局 + CommonJS) -->
-        <script src="/static/shared/config/factorConfig.js"></script>
+    
+    <!-- 主站因子映射全局变量(UMD 全局 + CommonJS) -->
+    <script src="/static/shared/config/factorMapping.js"></script>
+    <!-- 主站因子配置全局变量(UMD 全局 + CommonJS) -->
+    <script src="/static/shared/config/factorConfig.js"></script>
+    
     <!-- API 适配层(直接调用 web/src 下已实现的代码) -->
     <script src="/static/legacy/legacyApi.js"></script>
     <!-- 业务脚本(Vue2 + Element UI 调用 /api 接口) -->
     <script src="/static/legacy/legacy.js?v=20250926"></script>
+    
+    <script>
+    // 确保 FactorMapping 已加载，如果没有则提供空对象
+    if (typeof window.FactorMapping === 'undefined') {
+      console.warn('FactorMapping 未定义，创建空对象');
+      window.FactorMapping = {
+        CHINESE_TO_ENGLISH_MAP: {},
+        FUNDAMENTAL_NAME_MAP: {},
+        TECHNICAL_NAME_MAP: {},
+        CAPITAL_NAME_MAP: {}
+      };
+    }
+    </script>
 
     <!-- 因子范围选择弹窗（复用当前页面实例的数据） -->
     <script>

@@ -18,9 +18,8 @@ def create_app():
     # 添加shared目录的静态文件路由
     @app.route('/static/shared/<path:filename>')
     def shared_static(filename):
-        # 获取项目根目录
-        root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        shared_dir = os.path.join(root_dir, 'shared')
+        # 获取static/shared目录
+        shared_dir = os.path.join(app.static_folder, 'shared')
         print(f"Debug: Serving {filename} from {shared_dir}")  # 调试信息
         return send_from_directory(shared_dir, filename)
     
