@@ -523,6 +523,7 @@ const indicatorOptions = computed(() => {
       allThemes,
       topThemes,
       selectedThemes,
+      selectedAdditionalThemes, // 添加这个计算属性到返回值中
       handleSelectTheme,
       clearThemeSelection,
       // 弹窗相关

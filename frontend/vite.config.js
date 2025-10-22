@@ -46,12 +46,6 @@ export default defineConfig({
         changeOrigin: true,
         secure: false
       },
-      // 代理 /legacy/ 开头的路径（但不包括 /legacy.html）
-      '^/legacy/(.*)$': {
-        target: 'http://0.0.0.0:5000',
-        changeOrigin: true,
-        secure: false
-      },
       // 代理所有静态资源请求到后端
       '/static': {
         target: 'http://0.0.0.0:5000',

@@ -16,7 +16,7 @@ if __name__ == '__main__':
     
     # 使用配置文件中的主机和端口设置
     host = getattr(Config, 'APP_HOST', '0.0.0.0')
-    port = getattr(Config, 'APP_PORT', 5001)
+    port = getattr(Config, 'APP_PORT', 5000)
     debug = getattr(Config, 'FLASK_DEBUG', True)
     
     app.run(debug=debug, host=host, port=port)

@@ -167,6 +167,38 @@
           return /\d/.test(text) ? text + unit : text;
         };
         
+        // 格式化资金面范围
+        var formatCapitalRange = function(text, key) {
+          if (typeof text !== 'string') return text;
+          
+          // 处理陆股通净流入
+          if (key === 'hkConnect') {
+            if (text === '小于0') return '小于0';
+            if (text === '0~1000万') return '0~1000万';
+            if (text === '1000~5000万') return '1000~5000万';
+            if (text === '5000~10000万') return '5000~10000万';
+            if (text === '大于10000万') return '大于10000万';
+          }
+          
+          // 处理大单净额
+          if (key === 'bigOrderAmount') {
+            if (text === '小于0') return '小于0';
+            if (text === '0~1000万') return '0~1000万';
+            if (text === '1000~5000万') return '1000~5000万';
+            if (text === '大于5000万') return '大于5000万';
+          }
+          
+          // 处理大单净量
+          if (key === 'bigOrderNet') {
+            if (text === '小于0') return '小于0';
+            if (text === '0~1') return '0~1';
+            if (text === '1~3') return '1~3';
+            if (text === '大于3') return '大于3';
+          }
+          
+          return text;
+        };
+        
         // 处理基本面
         var f = all.fundamental || {};
         Object.keys(fundamentalNameMap).forEach(function(key) {
@@ -175,6 +207,50 @@
           var metric = fundamentalNameMap[key];
           var addYi = (key === 'revenue' || key === 'netProfit');
           var normalized = formatRange(val, addYi);
+          
+          // 特殊处理ROE和净利润，确保格式与后端一致
+          if (key === 'roe') {
+            // ROE特殊处理：将"5以下"转换为"小于5"，"5~10"保持不变等
+            if (val === '5以下') normalized = '小于5';
+            else if (val === '20以上') normalized = '大于20';
+          } else if (key === 'netProfit') {
+            // 净利润特殊处理：将"亏损"保持不变，其他转换为"0~1亿"等格式
+            if (val === '亏损') normalized = '亏损';
+            else if (val === '0~1') normalized = '0~1亿';
+            else if (val === '1~3') normalized = '1~3亿';
+            else if (val === '3~5') normalized = '3~5亿';
+            else if (val === '5以上') normalized = '大于5亿';
+          } else if (key === 'revenue') {
+            // 营业收入特殊处理：确保单位为亿
+            if (val === '5以下') normalized = '小于5亿';
+            else if (val === '5~10') normalized = '5~10亿';
+            else if (val === '10~20') normalized = '10~20亿';
+            else if (val === '20~50') normalized = '20~50亿';
+            else if (val === '50以上') normalized = '大于50亿';
+          } else if (key === 'pe') {
+            // 市盈率特殊处理
+            if (val === '10以下') normalized = '小于10';
+            else if (val === '30~40') normalized = '30~40';
+            else if (val === '40以上') normalized = '大于40';
+          } else if (key === 'grossMargin') {
+            // 销售毛利率特殊处理
+            if (val === '5以下') normalized = '小于5';
+            else if (val === '35~40') normalized = '35~40';
+            else if (val === '40以上') normalized = '大于40';
+          } else if (key === 'pb') {
+            // 市净率特殊处理
+            if (val === '1以下') normalized = '小于1';
+            else if (val === '1.5~2') normalized = '1.5~2';
+            else if (val === '2~3') normalized = '2~3';
+            else if (val === '3以上') normalized = '大于3';
+          } else if (key === 'debtRatio') {
+            // 资产负债率特殊处理
+            if (val === '10以下') normalized = '小于10';
+            else if (val === '10~15') normalized = '10~15';
+            else if (val === '15~30') normalized = '15~30';
+            else if (val === '30以上') normalized = '大于30';
+          }
+          
           out.push(metric + '_' + normalized);
           selectedFactors.fundamental.push(metric);
         });
@@ -213,7 +289,7 @@
             selectedFactors.technical.push('均线');
           }
           if (t.ma === '股价站上5日线') {
-            out.push('股价站上5日线');
+            out.push('均线_股价站上5日线');
             selectedFactors.technical.push('均线');
           }
           if (t.ma === '股价站上60日线') {
@@ -229,14 +305,9 @@
           var val = c[key];
           if (!val) return;
           var metric = nameMap[key];
-          var withUnit = val;
-          if (key === 'hkConnect') {
-            withUnit = /\d/.test(val) ? val + '万' : val;
-          }
-          if (key === 'bigOrderAmount') {
-            withUnit = String(val).replace(/万$/, '');
-          }
-          out.push(metric + '_' + withUnit);
+          // 使用新的格式化函数处理资金面因子范围
+          var normalized = formatCapitalRange(val, key);
+          out.push(metric + '_' + normalized);
           selectedFactors.capital.push(metric);
         });
         
