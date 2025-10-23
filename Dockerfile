@@ -8,7 +8,7 @@ WORKDIR /app
 COPY frontend/package*.json ./frontend/
 # 进入前端目录并安装依赖
 WORKDIR /app/frontend
-RUN npm ci --only=production
+RUN npm ci
 
 # 复制前端源代码
 COPY frontend/ ./
@@ -24,12 +24,20 @@ RUN groupadd -r appgroup && useradd -r -g appgroup appuser
 
 WORKDIR /app
 
-# 安装系统依赖，包括curl用于健康检查
+# 安装系统依赖，包括编译Python包所需的依赖
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     curl \
+    pkg-config \
+    libxml2-dev \
+    libxslt1-dev \
+    libffi-dev \
+    libssl-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# 升级pip到最新版本
+RUN pip install --upgrade pip
 
 # 复制requirements.txt并安装Python依赖
 COPY requirements.txt .
