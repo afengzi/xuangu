@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 股票筛选业务逻辑组合式函数
  * 提供股票筛选相关的状态管理和业务逻辑
  */
@@ -65,10 +65,25 @@ const collectFactors = (all = {}) => {
 }
 const processStockData = (rows = [], selectedFactors = {}) => {
   if (StockFilter && typeof StockFilter.processStockData === 'function') {
-    return StockFilter.processStockData(rows, selectedFactors)
+    // 确保启用addCodePrefix选项
+    return StockFilter.processStockData(rows, { addCodePrefix: true, ...selectedFactors })
   }
+  // 本地实现也增加股票代码前导零处理
   return Array.isArray(rows) ? rows.map(x => {
     const out = { '股票代码': x.code || x['股票代码'] || '' }
+    // 处理股票代码前导零
+    if (out['股票代码']) {
+      let code = String(out['股票代码']);
+      // 如果是纯数字且长度小于6，前面补0
+      if (/^\d+$/.test(code) && code.length < 6) {
+        out['股票代码'] = code.padStart(6, '0');
+      }
+      // 如果是6位数字，保持原样
+      else if (/^\d{6}$/.test(code)) {
+        out['股票代码'] = code;
+      }
+      // 其他情况保持原样
+    }
     Object.keys(x || {}).forEach(k => { if (k !== 'code' && k !== 'con_code') out[k] = x[k] })
     return out
   }) : []

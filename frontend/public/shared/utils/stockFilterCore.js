@@ -16,41 +16,41 @@
   function convertToBackendFormat(factorName, frontendValue) {
     // 基本面因子转换
     if (factorName === '营业收入') {
-      if (frontendValue === '5以下') return '小于5亿';
-      if (frontendValue === '5~10') return '5-10亿';
-      if (frontendValue === '10~20') return '10-20亿';
-      if (frontendValue === '20~50') return '20-50亿';
-      if (frontendValue === '50以上') return '大于50亿';
+      if (frontendValue === '小于5亿') return '小于5亿';
+      if (frontendValue === '5~10亿') return '5~10亿';
+      if (frontendValue === '10~20亿') return '10~20亿';
+      if (frontendValue === '20~50亿') return '20~50亿';
+      if (frontendValue === '50亿以上') return '大于50亿';
     }
     
     if (factorName === '市盈率') {
       if (frontendValue === '10以下') return '小于10';
-      if (frontendValue === '10~20') return '10-20';
-      if (frontendValue === '20~30') return '20-30';
-      if (frontendValue === '30~40') return '30-40';
+      if (frontendValue === '10~20') return '10~20';
+      if (frontendValue === '20~30') return '20~30';
+      if (frontendValue === '30~40') return '30~40';
     }
     
     if (factorName === '销售毛利率') {
-      if (frontendValue === '5以下') return '小于5%';
-      if (frontendValue === '5~20') return '5%-20%';
-      if (frontendValue === '20~35') return '20%-35%';
-      if (frontendValue === '35~40') return '35%-40%';
-      if (frontendValue === '40以上') return '大于40%';
+      if (frontendValue === '5以下') return '小于5';
+      if (frontendValue === '5~20') return '5~20';
+      if (frontendValue === '20~35') return '20~35';
+      if (frontendValue === '35~40') return '35~40';
+      if (frontendValue === '40以上') return '大于40';
     }
     
     if (factorName === 'ROE') {
-      if (frontendValue === '5以下') return '小于5%';
-      if (frontendValue === '5~10') return '5%-10%';
-      if (frontendValue === '10~20') return '10%-20%';
-      if (frontendValue === '20以上') return '大于20%';
+      if (frontendValue === '5以下') return '小于5';
+      if (frontendValue === '5~10') return '5~10';
+      if (frontendValue === '10~20') return '10~20';
+      if (frontendValue === '20以上') return '大于20';
     }
     
     if (factorName === '净利润') {
-      if (frontendValue === '亏损') return '小于0';
-      if (frontendValue === '0~1') return '0-1亿';
-      if (frontendValue === '1~3') return '1-3亿';
-      if (frontendValue === '3~5') return '3-5亿';
-      if (frontendValue === '5以上') return '大于5亿';
+      if (frontendValue === '亏损') return '亏损';
+      if (frontendValue === '0~1亿') return '0~1亿';
+      if (frontendValue === '1~3亿') return '1~3亿';
+      if (frontendValue === '3~5亿') return '3~5亿';
+      if (frontendValue === '5亿以上') return '大于5亿';
     }
     
     if (factorName === '市净率') {
@@ -108,24 +108,24 @@
     // 资金面因子转换
     if (factorName === '大单净量') {
       if (frontendValue === '小于0') return '小于0';
-      if (frontendValue === '0~1') return '0-1';
-      if (frontendValue === '1~3') return '1-3';
+      if (frontendValue === '0~1') return '0~1';
+      if (frontendValue === '1~3') return '1~3';
       if (frontendValue === '大于3') return '大于3';
     }
     
     if (factorName === '大单净额') {
       if (frontendValue === '小于0') return '小于0';
-      if (frontendValue === '0~1000') return '0-1000万';
-      if (frontendValue === '1000~5000') return '1000-5000万';
+      if (frontendValue === '0~1000') return '0~1000万';
+      if (frontendValue === '1000~5000') return '1000~5000万';
       if (frontendValue === '大于5000') return '大于5000万';
     }
     
     if (factorName === '陆股通净流入') {
       if (frontendValue === '小于0') return '小于0';
-      if (frontendValue === '0~1000') return '0-1000万';
-      if (frontendValue === '1000~5000') return '1000-5000万';
-      if (frontendValue === '5000~10000') return '5000万-1亿';
-      if (frontendValue === '大于10000') return '大于1亿';
+      if (frontendValue === '0~1000') return '0~1000万';
+      if (frontendValue === '1000~5000') return '1000~5000万';
+      if (frontendValue === '5000~10000') return '5000~10000万';
+      if (frontendValue === '大于10000') return '大于10000万';
     }
     
     // 默认返回原值
@@ -206,7 +206,7 @@
     processStockData: function(rows, options) {
       var result = [];
       var defaultOptions = {
-        addCodePrefix: false,
+        addCodePrefix: true,  // 默认启用前导零处理
         includeMetaData: false
       };
       options = Object.assign({}, defaultOptions, options);
@@ -226,14 +226,18 @@
           processedRow[key] = value;
         });
         
-        // 处理股票代码
-        if (options.addCodePrefix && processedRow['股票代码']) {
+        // 处理股票代码，确保6位数字格式
+        if (processedRow['股票代码']) {
           var code = String(processedRow['股票代码']);
-          if (code.length === 6) {
-            // 沪市代码以6开头，深市代码以0或3开头
-            var prefix = code.startsWith('6') ? 'SH' : 'SZ';
-            processedRow['股票代码'] = prefix + code;
+          // 如果是纯数字且长度小于6，前面补0
+          if (/^\d+$/.test(code) && code.length < 6) {
+            processedRow['股票代码'] = code.padStart(6, '0');
           }
+          // 如果是6位数字，保持原样
+          else if (/^\d{6}$/.test(code)) {
+            processedRow['股票代码'] = code;
+          }
+          // 其他情况保持原样
         }
         
         // 添加元数据（如果需要）

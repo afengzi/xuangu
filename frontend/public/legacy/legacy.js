@@ -27,8 +27,8 @@
   function parseStockData(res) {
     var rows = toArray(res);
     var f = window.StockFilterFactory && window.StockFilterFactory();
-    if (f && f.processStockData) return f.processStockData(rows, {});
-    return API.utils.processStockData(rows, {});
+    if (f && f.processStockData) return f.processStockData(rows, { addCodePrefix: true });
+    return API.utils.processStockData(rows, { addCodePrefix: true });
   }
 
   new Vue({

@@ -12,6 +12,12 @@ services:
     command: redis-server --appendonly yes
     # 重启策略
     restart: unless-stopped
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
 
   # 主应用服务
   app:
@@ -22,12 +28,21 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - FLASK_ENV=production
+      - APP_HOST=0.0.0.0
+      - APP_PORT=5000
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
     volumes:
       - ./backend/data:/app/backend/data
     # 重启策略
     restart: unless-stopped
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   # Redis数据持久化卷

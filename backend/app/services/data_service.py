@@ -349,8 +349,41 @@ def zhibiao2factor():
     except Exception as e:
         print(f"处理指标因子失败: {e}")
 
+def delete_fundamental_redis():
+    """
+    删除redis中的数据
+    """
+    r = connect_redis()
+    
+    # 删除factor下所有因子
+    cursor = '0'
+    pipe = r.pipeline()
+    count = 0
+    
+    # 删除所有code:开头的键
+    while cursor != 0:
+        cursor, keys = r.scan(cursor=cursor, match='code:*')
+        if keys:
+            pipe.delete(*keys)
+            count += len(keys)
+
+    # 执行所有删除命令
+    pipe.execute()
+    print(f"删除 {count} 个键")
+    r.close()
+
+def update_fundamental_code():
+    """
+    获取基本面数据并且写入redis
+    """
+    delete_fundamental_redis()
+    special1_fundamental2code()
+    special2_fundamental2code()
+    normal_fundamental2code()
+    print("基本面代码处理完成")
+
 def main():
-    delete_redis()
+    delete_technical_and_capital_redis()
     # 处理基本面代码
     # special1_fundamental2code()
     # special2_fundamental2code()
@@ -378,14 +411,35 @@ def main():
         fundamental2factor(factor)
     print("基本面因子处理完成")
 
-def delete_redis():
+def delete_technical_and_capital_redis():
     """
     删除redis中的数据
     """
     r = connect_redis()
+    
     # 删除factor下所有因子
-    r.delete('factor:*')
-    r.delete('zhibiao:*')
+    cursor = '0'
+    pipe = r.pipeline()
+    count = 0
+    
+    # 删除所有factor:开头的键
+    while cursor != 0:
+        cursor, keys = r.scan(cursor=cursor, match='factor:*')
+        if keys:
+            pipe.delete(*keys)
+            count += len(keys)
+    
+    # 删除所有zhibiao:开头的键
+    cursor = '0'
+    while cursor != 0:
+        cursor, keys = r.scan(cursor=cursor, match='zhibiao:*')
+        if keys:
+            pipe.delete(*keys)
+            count += len(keys)
+    
+    # 执行所有删除命令
+    pipe.execute()
+    print(f"删除 {count} 个键")
     r.close()
 
 # if __name__ == "__main__":

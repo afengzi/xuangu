@@ -102,7 +102,8 @@ def login():
 def get_factors_info_route():
     data = request.get_json()
     factors = data.get('factors')
-    return jsonify(get_factors_info(factors))
+    result = get_factors_info(factors)
+    return jsonify({'code': 200, 'data': result})
 
 
 # 获取所有题材列表
@@ -116,7 +117,8 @@ def get_all_themes_route():
 def get_themes_info_route():
     data = request.get_json()
     themes = data.get('themes')
-    return jsonify(get_themes_info(themes))
+    result = get_themes_info(themes)
+    return jsonify({'code': 200, 'data': result})
 
 
 # 题材和因子筛选
@@ -125,7 +127,8 @@ def get_multi_theme_and_factor_all_info_route():
     data = request.get_json()
     themes = data.get('themes')
     factors = data.get('factors')
-    return jsonify(get_multi_theme_and_factor_all_info(themes, factors))
+    result = get_multi_theme_and_factor_all_info(themes, factors)
+    return jsonify({'code': 200, 'data': result})
 
 
 # 股票详情
@@ -133,7 +136,18 @@ def get_multi_theme_and_factor_all_info_route():
 def get_detail_info_by_code_route():
     data = request.get_json()
     code = data.get('code')
-    return jsonify(get_detail_info_by_code(code))
+    result = get_detail_info_by_code(code)
+    
+    # 检查结果是否包含错误信息
+    if result and result.get('error'):
+        error_msg = result.get('message', f'获取股票{code}详情失败，请稍后再试')
+        return jsonify({'code': 400, 'error': error_msg}), 400
+    
+    # 如果结果为空或None，说明获取股票详情失败
+    if not result:
+        return jsonify({'code': 400, 'error': f'获取股票{code}详情失败，请稍后再试'}), 400
+    
+    return jsonify({'code': 200, 'data': result})
 
 
 # 特色指标查询
@@ -147,8 +161,9 @@ def get_zhibiao_info_route():
     data = request.get_json()
     zhibiao = data.get('zhibiao')
     if not zhibiao:
-        return jsonify({'error': '特色指标名称不能为空'}), 400
-    return jsonify(get_zhibiao_info(zhibiao))
+        return jsonify({'code': 400, 'error': '特色指标名称不能为空'}), 400
+    result = get_zhibiao_info(zhibiao)
+    return jsonify({'code': 200, 'data': result})
 
 
 # 特色指标 + 题材 + 因子 交集筛选
@@ -159,5 +174,6 @@ def get_zhibiao_theme_factor_route():
     themes = data.get('themes') or []
     factors = data.get('factors') or []
     if not zhibiao:
-        return jsonify({'error': '特色指标名称不能为空'}), 400
-    return jsonify(get_zhibiao_factor_theme_info(zhibiao, themes, factors))
+        return jsonify({'code': 400, 'error': '特色指标名称不能为空'}), 400
+    result = get_zhibiao_factor_theme_info(zhibiao, themes, factors)
+    return jsonify({'code': 200, 'data': result})
