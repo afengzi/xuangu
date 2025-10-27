@@ -10,7 +10,9 @@ const service = axios.create({
   headers: { 
     'Content-Type': 'application/json;charset=UTF-8',
     'X-Requested-With': 'XMLHttpRequest'
-  }
+  },
+  // 在生产环境中，确保请求URL是相对的
+  withCredentials: true
 })
 
 // 请求拦截器

@@ -13,7 +13,15 @@ def create_app():
     logging.basicConfig(level=getattr(logging, log_level.upper(), logging.INFO))
     
     # 启用CORS支持前端跨域请求
-    CORS(app)
+    # 配置CORS以允许来自8074端口的请求
+    CORS(app, resources={
+        r"/api/*": {
+            "origins": ["http://localhost:8074", "http://127.0.0.1:8074"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization", "X-Requested-With"],
+            "supports_credentials": True
+        }
+    })
     
     # 添加shared目录的静态文件路由
     @app.route('/static/shared/<path:filename>')

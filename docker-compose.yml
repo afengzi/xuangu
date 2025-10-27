@@ -4,8 +4,9 @@ services:
   # Redis数据库服务
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
+    # 不再将端口绑定到主机，仅在容器内部使用6379端口
+    # ports:
+    #   - "6379:6379"
     volumes:
       - redis_data:/data
     # 启用AOF持久化
@@ -19,17 +20,19 @@ services:
       timeout: 3s
       retries: 3
 
-  # 主应用服务
-  app:
-    build: .
+  # 后端服务
+  backend:
+    build: 
+      context: .
+      dockerfile: backend/Dockerfile
     ports:
-      - "5000:5000"
+      - "8075:8075"
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - FLASK_ENV=production
       - APP_HOST=0.0.0.0
-      - APP_PORT=5000
+      - APP_PORT=8075
     depends_on:
       redis:
         condition: service_healthy
@@ -39,10 +42,22 @@ services:
     restart: unless-stopped
     # 健康检查
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8075/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+
+  # 前端服务
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8074:8074"
+    depends_on:
+      - backend
+    # 重启策略
+    restart: unless-stopped
 
 volumes:
   # Redis数据持久化卷

@@ -1,25 +1,4 @@
-# 多阶段构建 - Ubuntu 24优化版
-# 第一阶段：构建前端静态资源
-FROM node:18-alpine AS frontend-builder
-
-WORKDIR /app
-
-# 配置npm镜像源以加速依赖安装
-RUN npm config set registry https://registry.npmmirror.com
-
-# 只复制package文件以利用Docker缓存
-COPY frontend/package*.json ./frontend/
-# 进入前端目录并安装依赖
-WORKDIR /app/frontend
-RUN npm ci
-
-# 复制前端源代码
-COPY frontend/ ./
-
-# 构建生产版本
-RUN npm run build
-
-# 第二阶段：构建后端应用
+# 后端服务Dockerfile
 FROM python:3.10-slim
 
 # 创建非root用户以提高安全性
@@ -51,12 +30,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # 复制应用代码
 COPY backend/ ./backend/
-# 移除shared目录复制，已在前端构建中包含
 COPY run.py .
-COPY env.example .env
-
-# 复制前端构建文件
-COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
 # 创建数据目录并设置权限
 RUN mkdir -p ./data && chown -R appuser:appgroup /app && chown -R appuser:appgroup ./data

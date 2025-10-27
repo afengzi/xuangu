@@ -14,14 +14,14 @@ export const API_CONFIG = {
   
   // 生产环境配置
   production: {
-    baseURL: 'https://api.yourdomain.com',
+    baseURL: '/api',
     timeout: 30000,
     mockEnabled: false
   },
   
   // 测试环境配置
   test: {
-    baseURL: 'https://test-api.yourdomain.com',
+    baseURL: '/api',
     timeout: 20000,
     mockEnabled: false
   }

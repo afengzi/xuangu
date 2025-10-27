@@ -23,7 +23,7 @@ class Config:
     
     # 应用配置
     APP_HOST = os.getenv('APP_HOST', '0.0.0.0')
-    APP_PORT = int(os.getenv('APP_PORT', 5000))
+    APP_PORT = int(os.getenv('APP_PORT', 8075))
     
     # 日志配置
     LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')

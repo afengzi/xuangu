@@ -6,8 +6,9 @@
   "description": "股票筛选分析web端界面",
   "scripts": {
     "dev": "vite",
+    "dev:host": "vite --host",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview --port 8074"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",

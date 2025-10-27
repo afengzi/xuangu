@@ -36,19 +36,19 @@ export default defineConfig({
     proxy: {
       // 共享文件和legacy文件让Vite直接从public目录提供，不经过代理
       '/api': {
-        target: 'http://0.0.0.0:5000',
+        target: 'http://localhost:8075',
         changeOrigin: true,
         secure: false
       },
       // 将 /legacy 交给后端 Flask 提供的模板，避免在开发环境被前端路由拦截导致刷新循环
       '^/legacy$': {
-        target: 'http://0.0.0.0:5000',
+        target: 'http://localhost:8075',
         changeOrigin: true,
         secure: false
       },
       // 代理所有静态资源请求到后端
       '/static': {
-        target: 'http://0.0.0.0:5000',
+        target: 'http://localhost:8075',
         changeOrigin: true,
         secure: false
       },
