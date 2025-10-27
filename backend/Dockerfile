@@ -42,9 +42,9 @@ USER appuser
 ENV FLASK_ENV=production
 ENV FLASK_DEBUG=False
 ENV APP_HOST=0.0.0.0
-ENV APP_PORT=5000
+ENV APP_PORT=8075
 
-EXPOSE 5000
+EXPOSE 8075
 
 # 启动应用
 CMD ["python", "run.py"]
