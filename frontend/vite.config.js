@@ -45,7 +45,7 @@ export default defineConfig({
         target: 'http://localhost:8075',
         changeOrigin: true,
         secure: false
-      },
+      },  
       // 代理所有静态资源请求到后端
       '/static': {
         target: 'http://localhost:8075',

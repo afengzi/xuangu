@@ -2,7 +2,7 @@ import sys
 import os
 
 # 使用相对导入或从已配置的PYTHONPATH导入
-from .token_manager import get_valid_token
+# from .token_manager import get_valid_token
 import tushare as ts
 from datetime import datetime, timedelta
 import schedule
@@ -15,8 +15,7 @@ def init_tushare():
     """
     初始化 tushare
     """
-    token = get_valid_token()
-    ts.set_token(token)
+    ts.set_token("43748a5da1339b43a4956da729ae791f4e25ce9a15a356060658ffe6")
     pro = ts.pro_api()
     return pro
 
